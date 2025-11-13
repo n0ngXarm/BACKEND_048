@@ -178,7 +178,7 @@ app.get('/', (req, res) => {
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>BACKEND_048 — Simple API Console (Docs)</title>
+<title>Pisitpong_BACKEND_048 — Simple API Console (Docs)</title>
 <style>
   :root{--bg:#041425;--card:#041427;--accent:#06b6d4;--muted:#9fb3c8;--text:#e6f6ff}
   body{margin:0;font-family:Inter,system-ui,Roboto,Arial;background:linear-gradient(180deg,#041425,#071827);color:var(--text);padding:18px}
