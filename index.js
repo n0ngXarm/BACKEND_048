@@ -169,217 +169,164 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 
 // -------------------------
-// Enhanced Landing page
+// Simple API Console (easy to use)
 // -------------------------
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.send(`<!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BACKEND_048 — API Console (Postman-like)</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BACKEND_048 — Simple API Console</title>
 <style>
-  :root{--bg:#071425;--card:#071827;--accent:#00d4ff;--muted:#9fb3c8;--text:#e6f6ff}
-  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041425,#071827);color:var(--text);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:28px}
-  .wrap{width:100%;max-width:1100px}
-  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:18px;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
-  h1{margin:0 0 6px;font-size:18px}
-  .muted{color:var(--muted);font-size:13px}
-  .toolbar{display:flex;gap:8px;align-items:center;margin-top:10px}
-  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#021423;color:var(--text)}
-  .flex{display:flex;gap:12px}
-  .panel{display:grid;grid-template-columns:1fr 420px;gap:12px;margin-top:12px}
-  .section{background:#061426;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-  textarea{width:100%;min-height:140px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#021423;color:var(--text);box-sizing:border-box}
-  .row{display:flex;gap:8px;align-items:center}
-  .btn{background:var(--accent);color:#012;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-  table{width:100%;border-collapse:collapse}
-  td,th{padding:6px;font-size:13px;border-bottom:1px dashed rgba(255,255,255,0.02);vertical-align:top}
-  .small{font-size:13px;color:var(--muted)}
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;background:#0b1520;color:#e6f6ff;margin:0;padding:24px;display:flex;justify-content:center}
+  .card{width:100%;max-width:880px;background:#071624;padding:18px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+  h1{margin:0 0 8px;font-size:18px}
+  .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  select,input,textarea,button{border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#021423;color:#e6f6ff;padding:8px}
+  input,textarea{flex:1}
+  textarea{min-height:120px;resize:vertical}
+  .small{font-size:13px;color:#9fb3c8}
+  .btn{background:#00d4ff;color:#012;border:none;padding:8px 10px;cursor:pointer;font-weight:700}
+  .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#9fb3c8}
   pre{background:#021423;padding:10px;border-radius:6px;overflow:auto;color:#bfeefb;font-size:13px}
-  .hdrrow{display:flex;gap:8px;margin-bottom:6px}
-  .hdrrow input{flex:1}
-  @media(max-width:980px){.panel{grid-template-columns:1fr}}
+  .flex-right{margin-left:auto}
+  label{font-size:13px;color:#9fb3c8;margin-right:6px}
+  .token-box{display:flex;gap:8px;align-items:center;margin-top:6px}
+  @media(max-width:720px){.row{flex-direction:column;align-items:stretch}}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>BACKEND_048 — API Console (Postman-like)</h1>
-      <p class="muted">ส่ง HTTP request, ตั้งค่า headers/body, ดู response (status, headers, body). ใช้ token จาก localStorage เป็น Authorization ได้</p>
+  <div class="card" role="main">
+    <h1>BACKEND_048 — Simple API Console</h1>
+    <p class="small">เลือก method, ใส่ path (เช่น /ping หรือ /users), ใส่ body เป็น JSON แล้วกด Send. เปิด "Use token" เพื่อแนบ Authorization จาก localStorage</p>
 
-      <div class="toolbar">
-        <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>PATCH</option></select>
-        <input id="path" type="text" value="/ping" style="flex:1" />
-        <button class="btn" id="send">Send</button>
-        <button class="btn ghost" id="copyCurl">Copy curl</button>
-        <button class="btn ghost" id="useToken">Use stored token</button>
-        <div style="margin-left:auto" class="small">Server: <span id="serverInfo">detecting...</span></div>
+    <div class="row">
+      <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>
+      <input id="path" placeholder="/ping" value="/ping"/>
+      <button class="btn" id="send">Send</button>
+      <button class="ghost" id="copyCurl">Copy curl</button>
+      <label class="flex-right"><input type="checkbox" id="useToken"/> Use token</label>
+    </div>
+
+    <div class="row">
+      <label style="width:80px">Body</label>
+      <textarea id="body" placeholder='{"key":"value"}'></textarea>
+    </div>
+
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <div style="flex:1">
+        <div class="small">Response — status / headers / body</div>
+        <pre id="status">Status: —</pre>
+        <pre id="respHeaders">Headers: —</pre>
+        <pre id="respBody">Body: —</pre>
       </div>
 
-      <div class="panel">
-        <div class="section">
-          <h3 style="margin:0 0 6px">Headers</h3>
-          <div id="headersList">
-            <div class="hdrrow"><input placeholder="Header name" class="h-name" value="Accept"/><input placeholder="Header value" class="h-value" value="application/json"/><button class="btn ghost" onclick="removeHdr(this)">×</button></div>
-          </div>
-          <div style="margin-top:8px" class="row">
-            <button class="btn ghost" onclick="addHdr()">+ Add Header</button>
-            <button class="btn ghost" onclick="clearHdrs()">Clear</button>
-          </div>
-
-          <h3 style="margin-top:12px;margin-bottom:6px">Body</h3>
-          <div class="small">ใช้สำหรับ POST/PUT/PATCH — raw JSON หรือ text</div>
-          <textarea id="body" placeholder='{ "key": "value" }'></textarea>
+      <div style="width:260px">
+        <div class="small">Token (localStorage key: api_token)</div>
+        <div class="token-box">
+          <input id="tokenInput" placeholder="paste or save token here" />
+          <button class="btn" id="saveToken">Save</button>
         </div>
-
-        <div class="section">
-          <h3 style="margin:0 0 6px">Response</h3>
-          <div class="small">Status: <span id="status">—</span></div>
-          <div style="margin-top:8px">
-            <strong>Headers</strong>
-            <pre id="respHeaders">—</pre>
-          </div>
-          <div style="margin-top:8px">
-            <strong>Body</strong>
-            <pre id="respBody">—</pre>
-          </div>
-          <div style="margin-top:8px" class="row">
-            <button class="btn ghost" id="saveExample">Save to local</button>
-            <button class="btn ghost" id="clearResp">Clear</button>
-          </div>
+        <div style="margin-top:8px;display:flex;gap:8px">
+          <button class="ghost" id="loadToken">Load</button>
+          <button class="ghost" id="clearToken">Clear</button>
+        </div>
+        <p class="small" style="margin-top:12px">Quick endpoints:</p>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="ghost" onclick="quick('/ping')">/ping</button>
+          <button class="ghost" onclick="quick('/api/data')">/api/data</button>
+          <button class="ghost" onclick="quickProtected('/users')">/users (auth)</button>
         </div>
       </div>
     </div>
+
+    <p class="small" style="margin-top:12px">Server: <span id="serverInfo">detecting...</span></p>
   </div>
 
 <script>
   const base = window.location.origin;
   document.getElementById('path').value = '/ping';
 
-  function addHdr(name='', value=''){
-    const div = document.createElement('div');
-    div.className = 'hdrrow';
-    div.innerHTML = '<input placeholder="Header name" class="h-name" value="'+escapeHtml(name)+'"/><input placeholder="Header value" class="h-value" value="'+escapeHtml(value)+'"/><button class="btn ghost" onclick="removeHdr(this)">×</button>';
-    document.getElementById('headersList').appendChild(div);
-  }
-  function removeHdr(btn){ btn.parentElement.remove(); }
-  function clearHdrs(){ document.getElementById('headersList').innerHTML=''; }
-
-  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
-
   function buildHeaders(){
     const headers = {};
-    document.querySelectorAll('#headersList .hdrrow').forEach(r=>{
-      const k = r.querySelector('.h-name').value.trim();
-      const v = r.querySelector('.h-value').value;
-      if(k) headers[k] = v;
-    });
+    if(document.getElementById('useToken').checked){
+      const t = localStorage.getItem('api_token');
+      if(t) headers['Authorization'] = 'Bearer ' + t;
+    }
     return headers;
   }
 
   async function send(){
     const method = document.getElementById('method').value;
-    const path = document.getElementById('path').value;
+    const path = document.getElementById('path').value.trim();
     const bodyText = document.getElementById('body').value;
-    const outBody = document.getElementById('respBody');
-    const outHdr = document.getElementById('respHeaders');
-    const outStatus = document.getElementById('status');
-
-    let url = path.startsWith('http') ? path : base + path;
     const headers = buildHeaders();
 
-    // if body looks like JSON and no Content-Type, set it
-    if(bodyText && !('Content-Type' in headers)){
-      try { JSON.parse(bodyText); headers['Content-Type'] = 'application/json'; } catch(e){}
+    if(bodyText && !headers['Content-Type']){
+      try { JSON.parse(bodyText); headers['Content-Type']='application/json'; } catch(e){}
     }
 
+    const url = path.startsWith('http') ? path : base + path;
+    document.getElementById('status').textContent = 'Status: loading...';
     try {
       const opts = { method, headers };
       if(method !== 'GET' && method !== 'HEAD' && bodyText) opts.body = bodyText;
-
       const res = await fetch(url, opts);
-      outStatus.textContent = res.status + ' ' + res.statusText;
-
-      // headers
-      const hdrObj = {};
-      res.headers.forEach((v,k)=> hdrObj[k] = v);
-      outHdr.textContent = JSON.stringify(hdrObj, null, 2);
-
-      // body
+      document.getElementById('status').textContent = 'Status: ' + res.status + ' ' + res.statusText;
+      const hdrs = {}; res.headers.forEach((v,k)=> hdrs[k]=v);
+      document.getElementById('respHeaders').textContent = JSON.stringify(hdrs, null, 2);
       const txt = await res.text();
-      try {
-        outBody.textContent = JSON.stringify(JSON.parse(txt), null, 2);
-      } catch(e){
-        outBody.textContent = txt;
-      }
-    } catch(e){
-      outStatus.textContent = 'Request failed';
-      outHdr.textContent = '—';
-      outBody.textContent = e.message;
+      try { document.getElementById('respBody').textContent = JSON.stringify(JSON.parse(txt), null, 2); } catch(e){ document.getElementById('respBody').textContent = txt; }
+    } catch (e){
+      document.getElementById('status').textContent = 'Status: failed';
+      document.getElementById('respHeaders').textContent = 'Headers: —';
+      document.getElementById('respBody').textContent = e.message;
     }
   }
 
   document.getElementById('send').addEventListener('click', send);
-  document.getElementById('clearResp').addEventListener('click', ()=>{
-    document.getElementById('status').textContent='—';
-    document.getElementById('respHeaders').textContent='—';
-    document.getElementById('respBody').textContent='—';
+  document.getElementById('saveToken').addEventListener('click', ()=>{
+    const v = document.getElementById('tokenInput').value.trim();
+    if(!v) return alert('Enter token to save');
+    localStorage.setItem('api_token', v);
+    alert('Token saved (api_token)');
+  });
+  document.getElementById('loadToken').addEventListener('click', ()=>{
+    const t = localStorage.getItem('api_token') || '';
+    document.getElementById('tokenInput').value = t;
+    alert(t ? 'Token loaded into input' : 'No token found');
+  });
+  document.getElementById('clearToken').addEventListener('click', ()=>{
+    localStorage.removeItem('api_token');
+    document.getElementById('tokenInput').value = '';
+    alert('Token cleared');
   });
 
   document.getElementById('copyCurl').addEventListener('click', ()=>{
     const method = document.getElementById('method').value;
     const path = document.getElementById('path').value;
-    const headers = buildHeaders();
     const body = document.getElementById('body').value;
-    let url = path.startsWith('http') ? path : base + path;
+    const url = path.startsWith('http') ? path : base + path;
     let parts = ['curl -X', method, '"' + url + '"'];
-    Object.keys(headers).forEach(k=> parts.push('-H "'+k+': '+headers[k].replace(/"/g,'\\"')+'"'));
+    if(document.getElementById('useToken').checked){
+      const t = localStorage.getItem('api_token');
+      if(t) parts.push('-H "Authorization: Bearer ' + t.replace(/"/g,'\\"') + '"');
+    }
     if(body) parts.push("-d '" + body.replace(/'/g,"\\'") + "'");
-    const curl = parts.join(' ');
-    navigator.clipboard.writeText(curl).then(()=> alert('curl copied'));
+    navigator.clipboard.writeText(parts.join(' ')).then(()=>alert('curl copied'));
   });
 
-  // use token button: fill Authorization header from localStorage token
-  document.getElementById('useToken').addEventListener('click', ()=>{
-    const token = localStorage.getItem('api_token');
-    if(!token) return alert('No token in localStorage (key api_token)');
-    // ensure header exists
-    let found=false;
-    document.querySelectorAll('#headersList .hdrrow').forEach(r=>{
-      const k = r.querySelector('.h-name').value.trim().toLowerCase();
-      if(k === 'authorization'){ r.querySelector('.h-value').value = 'Bearer ' + token; found=true; }
-    });
-    if(!found) addHdr('Authorization','Bearer ' + token);
-  });
+  function quick(p){ document.getElementById('path').value = p; document.getElementById('method').value = 'GET'; send(); }
+  function quickProtected(p){ document.getElementById('path').value = p; document.getElementById('method').value = 'GET'; document.getElementById('useToken').checked = true; send(); }
 
-  // save example (store last response)
-  document.getElementById('saveExample').addEventListener('click', ()=>{
-    const data = {
-      method: document.getElementById('method').value,
-      path: document.getElementById('path').value,
-      headers: buildHeaders(),
-      body: document.getElementById('body').value,
-      response: {
-        status: document.getElementById('status').textContent,
-        headers: document.getElementById('respHeaders').textContent,
-        body: document.getElementById('respBody').textContent
-      },
-      ts: Date.now()
-    };
-    localStorage.setItem('last_req', JSON.stringify(data));
-    alert('Saved to localStorage (last_req)');
-  });
-
-  // init: add a blank header row and show server status
+  // init server info
   (async ()=>{
-    addHdr(); // blank row for convenience
     try {
       const r = await fetch(base + '/ping');
       const j = await r.json();
-      document.getElementById('serverInfo').textContent = j.status ? 'ok' : 'unreachable';
+      document.getElementById('serverInfo').textContent = j.status ? 'ok — ' + (j.time||'') : 'unreachable';
     } catch(e){
       document.getElementById('serverInfo').textContent = 'unreachable';
     }
