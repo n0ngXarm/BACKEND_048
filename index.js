@@ -176,179 +176,215 @@ app.get('/', (req, res) => {
   res.send(`<!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>BACKEND_048 — Interactive API Console</title>
-  <style>
-    :root{--bg:#071126;--card:#071827;--accent:#00d4ff;--muted:#9fb3c8;--text:#e6f6ff}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041425 0%,#071827 100%);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
-    .wrap{width:100%;max-width:980px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:22px;border-radius:12px;box-shadow:0 10px 40px rgba(2,6,23,0.6)}
-    h1{margin:0 0 6px;font-size:20px}
-    .muted{color:var(--muted);font-size:13px}
-    .cols{display:flex;gap:16px;align-items:flex-start}
-    .left{flex:1;min-width:0}
-    .right{width:320px}
-    .box{background:transparent;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:12px}
-    label{display:block;font-size:13px;margin:8px 0 6px;color:var(--muted)}
-    input[type="text"], input[type="password"], textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#021423;color:var(--text);box-sizing:border-box}
-    .btn{background:var(--accent);color:#012;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
-    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
-    pre{background:#021423;padding:10px;border-radius:6px;overflow:auto;color:#bfeefb;font-size:13px}
-    .row{display:flex;gap:8px;margin-top:8px}
-    .small{font-size:13px;color:var(--muted)}
-    .token{word-break:break-all;background:#031827;padding:8px;border-radius:6px;border:1px dashed rgba(255,255,255,0.02)}
-    footer{margin-top:8px;color:var(--muted);font-size:13px}
-    @media(max-width:880px){.cols{flex-direction:column}.right{width:100%}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BACKEND_048 — API Console (Postman-like)</title>
+<style>
+  :root{--bg:#071425;--card:#071827;--accent:#00d4ff;--muted:#9fb3c8;--text:#e6f6ff}
+  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041425,#071827);color:var(--text);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:28px}
+  .wrap{width:100%;max-width:1100px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:18px;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+  h1{margin:0 0 6px;font-size:18px}
+  .muted{color:var(--muted);font-size:13px}
+  .toolbar{display:flex;gap:8px;align-items:center;margin-top:10px}
+  select,input[type="text"]{padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#021423;color:var(--text)}
+  .flex{display:flex;gap:12px}
+  .panel{display:grid;grid-template-columns:1fr 420px;gap:12px;margin-top:12px}
+  .section{background:#061426;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+  textarea{width:100%;min-height:140px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#021423;color:var(--text);box-sizing:border-box}
+  .row{display:flex;gap:8px;align-items:center}
+  .btn{background:var(--accent);color:#012;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  table{width:100%;border-collapse:collapse}
+  td,th{padding:6px;font-size:13px;border-bottom:1px dashed rgba(255,255,255,0.02);vertical-align:top}
+  .small{font-size:13px;color:var(--muted)}
+  pre{background:#021423;padding:10px;border-radius:6px;overflow:auto;color:#bfeefb;font-size:13px}
+  .hdrrow{display:flex;gap:8px;margin-bottom:6px}
+  .hdrrow input{flex:1}
+  @media(max-width:980px){.panel{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>BACKEND_048 — Interactive API Console</h1>
-      <p class="muted">ทดสอบ API ได้ทันทีจากหน้าเว็บ — login เพื่อรับ JWT, คัดลอก token, เรียก endpoint ที่ต้องการ</p>
+      <h1>BACKEND_048 — API Console (Postman-like)</h1>
+      <p class="muted">ส่ง HTTP request, ตั้งค่า headers/body, ดู response (status, headers, body). ใช้ token จาก localStorage เป็น Authorization ได้</p>
 
-      <div class="cols" style="margin-top:12px">
-        <div class="left">
-          <div class="box">
-            <strong>Quick Endpoints</strong>
-            <ul style="margin:8px 0 0;padding:0;list-style:none">
-              <li style="padding:8px 0;display:flex;justify-content:space-between;align-items:center"><span>/ping</span><button class="btn" onclick="call('/ping')">Call</button></li>
-              <li style="padding:8px 0;display:flex;justify-content:space-between;align-items:center"><span>/api/data</span><button class="btn" onclick="call('/api/data')">Call</button></li>
-              <li style="padding:8px 0;display:flex;justify-content:space-between;align-items:center"><span>POST /login</span><button class="btn" onclick="showLogin()">Example</button></li>
-              <li style="padding:8px 0;display:flex;justify-content:space-between;align-items:center"><span>/users (protected)</span><button class="btn secondary" onclick="callProtected('/users')">Call (auth)</button></li>
-            </ul>
+      <div class="toolbar">
+        <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>PATCH</option></select>
+        <input id="path" type="text" value="/ping" style="flex:1" />
+        <button class="btn" id="send">Send</button>
+        <button class="btn ghost" id="copyCurl">Copy curl</button>
+        <button class="btn ghost" id="useToken">Use stored token</button>
+        <div style="margin-left:auto" class="small">Server: <span id="serverInfo">detecting...</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="section">
+          <h3 style="margin:0 0 6px">Headers</h3>
+          <div id="headersList">
+            <div class="hdrrow"><input placeholder="Header name" class="h-name" value="Accept"/><input placeholder="Header value" class="h-value" value="application/json"/><button class="btn ghost" onclick="removeHdr(this)">×</button></div>
+          </div>
+          <div style="margin-top:8px" class="row">
+            <button class="btn ghost" onclick="addHdr()">+ Add Header</button>
+            <button class="btn ghost" onclick="clearHdrs()">Clear</button>
           </div>
 
-          <div class="box">
-            <strong>Request / Response</strong>
-            <div style="margin-top:8px">
-              <pre id="result">No requests yet</pre>
-            </div>
-            <footer>Server: <span id="serverInfo" class="muted">detecting...</span></footer>
-          </div>
+          <h3 style="margin-top:12px;margin-bottom:6px">Body</h3>
+          <div class="small">ใช้สำหรับ POST/PUT/PATCH — raw JSON หรือ text</div>
+          <textarea id="body" placeholder='{ "key": "value" }'></textarea>
         </div>
 
-        <div class="right">
-          <div class="box" style="margin-bottom:10px">
-            <strong>Login</strong>
-            <label>Username</label>
-            <input id="username" type="text" placeholder="your_user" />
-            <label>Password</label>
-            <input id="password" type="password" placeholder="your_password" />
-            <div class="row">
-              <button class="btn" onclick="login()">Login</button>
-              <button class="btn secondary" onclick="logout()">Logout</button>
-            </div>
-            <div style="margin-top:10px">
-              <div class="small">Token (stored in localStorage)</div>
-              <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
-                <div id="token" class="token">—</div>
-                <button class="btn secondary" onclick="copyToken()">Copy</button>
-              </div>
-            </div>
+        <div class="section">
+          <h3 style="margin:0 0 6px">Response</h3>
+          <div class="small">Status: <span id="status">—</span></div>
+          <div style="margin-top:8px">
+            <strong>Headers</strong>
+            <pre id="respHeaders">—</pre>
           </div>
-
-          <div class="box">
-            <strong>Examples</strong>
-            <div style="margin-top:8px" class="small">
-              <div>curl login:</div>
-              <pre id="curlLogin">curl -X POST {{origin}}/login -H "Content-Type: application/json" -d '{"username":"your_user","password":"your_password"}'</pre>
-              <div style="margin-top:8px">Use token with:</div>
-              <pre id="curlAuth">curl -H "Authorization: Bearer &lt;TOKEN&gt;" {{origin}}/users</pre>
-            </div>
+          <div style="margin-top:8px">
+            <strong>Body</strong>
+            <pre id="respBody">—</pre>
+          </div>
+          <div style="margin-top:8px" class="row">
+            <button class="btn ghost" id="saveExample">Save to local</button>
+            <button class="btn ghost" id="clearResp">Clear</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    const base = window.location.origin;
-    document.getElementById('curlLogin').textContent = document.getElementById('curlLogin').textContent.replace('{{origin}}', base);
-    document.getElementById('curlAuth').textContent = document.getElementById('curlAuth').textContent.replace('{{origin}}', base);
+<script>
+  const base = window.location.origin;
+  document.getElementById('path').value = '/ping';
 
-    function pretty(txt){
-      try { return JSON.stringify(typeof txt === 'string' ? JSON.parse(txt) : txt, null, 2); }
-      catch(e){ return txt; }
+  function addHdr(name='', value=''){
+    const div = document.createElement('div');
+    div.className = 'hdrrow';
+    div.innerHTML = '<input placeholder="Header name" class="h-name" value="'+escapeHtml(name)+'"/><input placeholder="Header value" class="h-value" value="'+escapeHtml(value)+'"/><button class="btn ghost" onclick="removeHdr(this)">×</button>';
+    document.getElementById('headersList').appendChild(div);
+  }
+  function removeHdr(btn){ btn.parentElement.remove(); }
+  function clearHdrs(){ document.getElementById('headersList').innerHTML=''; }
+
+  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+  function buildHeaders(){
+    const headers = {};
+    document.querySelectorAll('#headersList .hdrrow').forEach(r=>{
+      const k = r.querySelector('.h-name').value.trim();
+      const v = r.querySelector('.h-value').value;
+      if(k) headers[k] = v;
+    });
+    return headers;
+  }
+
+  async function send(){
+    const method = document.getElementById('method').value;
+    const path = document.getElementById('path').value;
+    const bodyText = document.getElementById('body').value;
+    const outBody = document.getElementById('respBody');
+    const outHdr = document.getElementById('respHeaders');
+    const outStatus = document.getElementById('status');
+
+    let url = path.startsWith('http') ? path : base + path;
+    const headers = buildHeaders();
+
+    // if body looks like JSON and no Content-Type, set it
+    if(bodyText && !('Content-Type' in headers)){
+      try { JSON.parse(bodyText); headers['Content-Type'] = 'application/json'; } catch(e){}
     }
 
-    async function call(path){
-      const out = document.getElementById('result');
-      out.textContent = 'Loading...';
+    try {
+      const opts = { method, headers };
+      if(method !== 'GET' && method !== 'HEAD' && bodyText) opts.body = bodyText;
+
+      const res = await fetch(url, opts);
+      outStatus.textContent = res.status + ' ' + res.statusText;
+
+      // headers
+      const hdrObj = {};
+      res.headers.forEach((v,k)=> hdrObj[k] = v);
+      outHdr.textContent = JSON.stringify(hdrObj, null, 2);
+
+      // body
+      const txt = await res.text();
       try {
-        const r = await fetch(base + path);
-        const txt = await r.text();
-        out.textContent = (r.headers.get('content-type') || '').includes('application/json') ? pretty(txt) : txt;
+        outBody.textContent = JSON.stringify(JSON.parse(txt), null, 2);
       } catch(e){
-        out.textContent = 'Request failed: ' + e.message;
+        outBody.textContent = txt;
       }
+    } catch(e){
+      outStatus.textContent = 'Request failed';
+      outHdr.textContent = '—';
+      outBody.textContent = e.message;
     }
+  }
 
-    async function login(){
-      const u = document.getElementById('username').value;
-      const p = document.getElementById('password').value;
-      if(!u||!p){ alert('กรุณากรอก username และ password'); return; }
-      const out = document.getElementById('result');
-      out.textContent = 'Logging in...';
-      try {
-        const r = await fetch(base + '/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: u, password: p })
-        });
-        const j = await r.json();
-        if(r.ok && j.token){
-          localStorage.setItem('api_token', j.token);
-          document.getElementById('token').textContent = j.token;
-          out.textContent = 'Login successful. Token saved.';
-        } else {
-          out.textContent = 'Login error: ' + (j.error || JSON.stringify(j));
-        }
-      } catch(e){
-        out.textContent = 'Login failed: ' + e.message;
-      }
+  document.getElementById('send').addEventListener('click', send);
+  document.getElementById('clearResp').addEventListener('click', ()=>{
+    document.getElementById('status').textContent='—';
+    document.getElementById('respHeaders').textContent='—';
+    document.getElementById('respBody').textContent='—';
+  });
+
+  document.getElementById('copyCurl').addEventListener('click', ()=>{
+    const method = document.getElementById('method').value;
+    const path = document.getElementById('path').value;
+    const headers = buildHeaders();
+    const body = document.getElementById('body').value;
+    let url = path.startsWith('http') ? path : base + path;
+    let parts = ['curl -X', method, '"' + url + '"'];
+    Object.keys(headers).forEach(k=> parts.push('-H "'+k+': '+headers[k].replace(/"/g,'\\"')+'"'));
+    if(body) parts.push("-d '" + body.replace(/'/g,"\\'") + "'");
+    const curl = parts.join(' ');
+    navigator.clipboard.writeText(curl).then(()=> alert('curl copied'));
+  });
+
+  // use token button: fill Authorization header from localStorage token
+  document.getElementById('useToken').addEventListener('click', ()=>{
+    const token = localStorage.getItem('api_token');
+    if(!token) return alert('No token in localStorage (key api_token)');
+    // ensure header exists
+    let found=false;
+    document.querySelectorAll('#headersList .hdrrow').forEach(r=>{
+      const k = r.querySelector('.h-name').value.trim().toLowerCase();
+      if(k === 'authorization'){ r.querySelector('.h-value').value = 'Bearer ' + token; found=true; }
+    });
+    if(!found) addHdr('Authorization','Bearer ' + token);
+  });
+
+  // save example (store last response)
+  document.getElementById('saveExample').addEventListener('click', ()=>{
+    const data = {
+      method: document.getElementById('method').value,
+      path: document.getElementById('path').value,
+      headers: buildHeaders(),
+      body: document.getElementById('body').value,
+      response: {
+        status: document.getElementById('status').textContent,
+        headers: document.getElementById('respHeaders').textContent,
+        body: document.getElementById('respBody').textContent
+      },
+      ts: Date.now()
+    };
+    localStorage.setItem('last_req', JSON.stringify(data));
+    alert('Saved to localStorage (last_req)');
+  });
+
+  // init: add a blank header row and show server status
+  (async ()=>{
+    addHdr(); // blank row for convenience
+    try {
+      const r = await fetch(base + '/ping');
+      const j = await r.json();
+      document.getElementById('serverInfo').textContent = j.status ? 'ok' : 'unreachable';
+    } catch(e){
+      document.getElementById('serverInfo').textContent = 'unreachable';
     }
-
-    function logout(){
-      localStorage.removeItem('api_token');
-      document.getElementById('token').textContent = '—';
-      document.getElementById('result').textContent = 'Logged out';
-    }
-
-    function copyToken(){
-      const t = localStorage.getItem('api_token') || document.getElementById('token').textContent;
-      if(!t || t==='—'){ alert('No token to copy'); return; }
-      navigator.clipboard.writeText(t).then(()=> alert('Token copied'));
-    }
-
-    async function callProtected(path){
-      const token = localStorage.getItem('api_token');
-      const out = document.getElementById('result');
-      if(!token){ out.textContent = 'No token. Please login first.'; return; }
-      out.textContent = 'Loading (auth)...';
-      try {
-        const r = await fetch(base + path, { headers: { 'Authorization': 'Bearer ' + token }});
-        const txt = await r.text();
-        out.textContent = (r.headers.get('content-type') || '').includes('application/json') ? pretty(txt) : txt;
-      } catch(e){
-        out.textContent = 'Request failed: ' + e.message;
-      }
-    }
-
-    // initialize token display & server info
-    (async ()=>{
-      const t = localStorage.getItem('api_token');
-      if(t) document.getElementById('token').textContent = t;
-      try {
-        const r = await fetch(base + '/ping');
-        const j = await r.json();
-        document.getElementById('serverInfo').textContent = j.status ? 'ok — ' + (j.time||'') : JSON.stringify(j);
-      } catch(e){
-        document.getElementById('serverInfo').textContent = 'unreachable';
-      }
-    })();
-  </script>
+  })();
+</script>
 </body>
 </html>`);
 });
