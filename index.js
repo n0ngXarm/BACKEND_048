@@ -169,7 +169,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 
 // -------------------------
-// Landing page for browser
+// Enhanced Landing page
 // -------------------------
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -178,84 +178,173 @@ app.get('/', (req, res) => {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>BACKEND_048 - API</title>
+  <title>BACKEND_048 — Interactive API Console</title>
   <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8;--text:#e6eef6}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;background:linear-gradient(180deg,#071025 0%,#081426 60%);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-    .card{max-width:900px;width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:28px;border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    :root{--bg:#071126;--card:#071827;--accent:#00d4ff;--muted:#9fb3c8;--text:#e6f6ff}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041425 0%,#071827 100%);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+    .wrap{width:100%;max-width:980px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);padding:22px;border-radius:12px;box-shadow:0 10px 40px rgba(2,6,23,0.6)}
     h1{margin:0 0 6px;font-size:20px}
-    p.lead{margin:0 0 18px;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px}
-    .box{background:var(--card);padding:14px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-    .endpoints{list-style:none;padding:0;margin:0}
-    .endpoints li{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.02);display:flex;justify-content:space-between;align-items:center;font-size:14px}
-    .btn{background:var(--accent);color:#012;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
     .muted{color:var(--muted);font-size:13px}
+    .cols{display:flex;gap:16px;align-items:flex-start}
+    .left{flex:1;min-width:0}
+    .right{width:320px}
+    .box{background:transparent;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:12px}
+    label{display:block;font-size:13px;margin:8px 0 6px;color:var(--muted)}
+    input[type="text"], input[type="password"], textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#021423;color:var(--text);box-sizing:border-box}
+    .btn{background:var(--accent);color:#012;padding:8px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
     pre{background:#021423;padding:10px;border-radius:6px;overflow:auto;color:#bfeefb;font-size:13px}
-    footer{margin-top:12px;color:var(--muted);font-size:13px}
-    @media(max-width:820px){.grid{grid-template-columns:1fr;}}
+    .row{display:flex;gap:8px;margin-top:8px}
+    .small{font-size:13px;color:var(--muted)}
+    .token{word-break:break-all;background:#031827;padding:8px;border-radius:6px;border:1px dashed rgba(255,255,255,0.02)}
+    footer{margin-top:8px;color:var(--muted);font-size:13px}
+    @media(max-width:880px){.cols{flex-direction:column}.right{width:100%}}
   </style>
 </head>
 <body>
-  <div class="card" role="main">
-    <h1>BACKEND_048 — API Landing</h1>
-    <p class="lead">หน้าสำหรับตรวจสอบบริการเบื้องต้น: ดูสถานะ, ทดลองเรียก API, และดูตัวอย่างการ login</p>
-    <div class="grid">
-      <div class="box">
-        <h3 style="margin:0 0 8px">Available endpoints</h3>
-        <ul class="endpoints">
-          <li><span>/ping</span><button class="btn" onclick="call('/ping')">Check</button></li>
-          <li><span>/api/data</span><button class="btn" onclick="call('/api/data')">Check</button></li>
-          <li><span>POST /login</span><button class="btn" onclick="showLogin()">Example</button></li>
-          <li><span>/users (protected)</span><span class="muted">Requires JWT</span></li>
-        </ul>
-        <div style="margin-top:12px">
-          <strong>Example login payload</strong>
-          <pre id="loginExample">{
-  "username": "your_user",
-  "password": "your_password"
-}</pre>
-        </div>
-      </div>
+  <div class="wrap">
+    <div class="card">
+      <h1>BACKEND_048 — Interactive API Console</h1>
+      <p class="muted">ทดสอบ API ได้ทันทีจากหน้าเว็บ — login เพื่อรับ JWT, คัดลอก token, เรียก endpoint ที่ต้องการ</p>
 
-      <div class="box">
-        <h3 style="margin:0 0 8px">Quick test</h3>
-        <div style="display:flex;gap:8px;margin-bottom:12px">
-          <button class="btn" onclick="call('/ping')">Ping</button>
-          <button class="btn" onclick="call('/api/data')">API Data</button>
+      <div class="cols" style="margin-top:12px">
+        <div class="left">
+          <div class="box">
+            <strong>Quick Endpoints</strong>
+            <ul style="margin:8px 0 0;padding:0;list-style:none">
+              <li style="padding:8px 0;display:flex;justify-content:space-between;align-items:center"><span>/ping</span><button class="btn" onclick="call('/ping')">Call</button></li>
+              <li style="padding:8px 0;display:flex;justify-content:space-between;align-items:center"><span>/api/data</span><button class="btn" onclick="call('/api/data')">Call</button></li>
+              <li style="padding:8px 0;display:flex;justify-content:space-between;align-items:center"><span>POST /login</span><button class="btn" onclick="showLogin()">Example</button></li>
+              <li style="padding:8px 0;display:flex;justify-content:space-between;align-items:center"><span>/users (protected)</span><button class="btn secondary" onclick="callProtected('/users')">Call (auth)</button></li>
+            </ul>
+          </div>
+
+          <div class="box">
+            <strong>Request / Response</strong>
+            <div style="margin-top:8px">
+              <pre id="result">No requests yet</pre>
+            </div>
+            <footer>Server: <span id="serverInfo" class="muted">detecting...</span></footer>
+          </div>
         </div>
-        <div>
-          <strong>Result</strong>
-          <pre id="result">No requests yet</pre>
+
+        <div class="right">
+          <div class="box" style="margin-bottom:10px">
+            <strong>Login</strong>
+            <label>Username</label>
+            <input id="username" type="text" placeholder="your_user" />
+            <label>Password</label>
+            <input id="password" type="password" placeholder="your_password" />
+            <div class="row">
+              <button class="btn" onclick="login()">Login</button>
+              <button class="btn secondary" onclick="logout()">Logout</button>
+            </div>
+            <div style="margin-top:10px">
+              <div class="small">Token (stored in localStorage)</div>
+              <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+                <div id="token" class="token">—</div>
+                <button class="btn secondary" onclick="copyToken()">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="box">
+            <strong>Examples</strong>
+            <div style="margin-top:8px" class="small">
+              <div>curl login:</div>
+              <pre id="curlLogin">curl -X POST {{origin}}/login -H "Content-Type: application/json" -d '{"username":"your_user","password":"your_password"}'</pre>
+              <div style="margin-top:8px">Use token with:</div>
+              <pre id="curlAuth">curl -H "Authorization: Bearer &lt;TOKEN&gt;" {{origin}}/users</pre>
+            </div>
+          </div>
         </div>
-        <footer>Server: <span id="serverInfo" class="muted">detecting...</span></footer>
       </div>
     </div>
   </div>
 
   <script>
     const base = window.location.origin;
-    async function call(path) {
+    document.getElementById('curlLogin').textContent = document.getElementById('curlLogin').textContent.replace('{{origin}}', base);
+    document.getElementById('curlAuth').textContent = document.getElementById('curlAuth').textContent.replace('{{origin}}', base);
+
+    function pretty(txt){
+      try { return JSON.stringify(typeof txt === 'string' ? JSON.parse(txt) : txt, null, 2); }
+      catch(e){ return txt; }
+    }
+
+    async function call(path){
       const out = document.getElementById('result');
       out.textContent = 'Loading...';
       try {
-        const res = await fetch(base + path);
-        const txt = await res.text();
-        out.textContent = (res.ok ? txt : 'Error ' + res.status + '\\n' + txt);
-      } catch (e) {
+        const r = await fetch(base + path);
+        const txt = await r.text();
+        out.textContent = (r.headers.get('content-type') || '').includes('application/json') ? pretty(txt) : txt;
+      } catch(e){
         out.textContent = 'Request failed: ' + e.message;
       }
     }
-    function showLogin() {
-      alert('ตัวอย่าง: เปิด DevTools หรือใช้ curl:\\n\\nPOST ' + base + '/login\\nContent-Type: application/json\\n\\n' + JSON.stringify({username:'your_user',password:'your_password'},null,2));
+
+    async function login(){
+      const u = document.getElementById('username').value;
+      const p = document.getElementById('password').value;
+      if(!u||!p){ alert('กรุณากรอก username และ password'); return; }
+      const out = document.getElementById('result');
+      out.textContent = 'Logging in...';
+      try {
+        const r = await fetch(base + '/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        const j = await r.json();
+        if(r.ok && j.token){
+          localStorage.setItem('api_token', j.token);
+          document.getElementById('token').textContent = j.token;
+          out.textContent = 'Login successful. Token saved.';
+        } else {
+          out.textContent = 'Login error: ' + (j.error || JSON.stringify(j));
+        }
+      } catch(e){
+        out.textContent = 'Login failed: ' + e.message;
+      }
     }
-    // show server info by calling /ping silently
-    (async ()=> {
+
+    function logout(){
+      localStorage.removeItem('api_token');
+      document.getElementById('token').textContent = '—';
+      document.getElementById('result').textContent = 'Logged out';
+    }
+
+    function copyToken(){
+      const t = localStorage.getItem('api_token') || document.getElementById('token').textContent;
+      if(!t || t==='—'){ alert('No token to copy'); return; }
+      navigator.clipboard.writeText(t).then(()=> alert('Token copied'));
+    }
+
+    async function callProtected(path){
+      const token = localStorage.getItem('api_token');
+      const out = document.getElementById('result');
+      if(!token){ out.textContent = 'No token. Please login first.'; return; }
+      out.textContent = 'Loading (auth)...';
+      try {
+        const r = await fetch(base + path, { headers: { 'Authorization': 'Bearer ' + token }});
+        const txt = await r.text();
+        out.textContent = (r.headers.get('content-type') || '').includes('application/json') ? pretty(txt) : txt;
+      } catch(e){
+        out.textContent = 'Request failed: ' + e.message;
+      }
+    }
+
+    // initialize token display & server info
+    (async ()=>{
+      const t = localStorage.getItem('api_token');
+      if(t) document.getElementById('token').textContent = t;
       try {
         const r = await fetch(base + '/ping');
         const j = await r.json();
         document.getElementById('serverInfo').textContent = j.status ? 'ok — ' + (j.time||'') : JSON.stringify(j);
-      } catch(e) {
+      } catch(e){
         document.getElementById('serverInfo').textContent = 'unreachable';
       }
     })();
