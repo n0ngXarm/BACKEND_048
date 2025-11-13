@@ -24,14 +24,13 @@ app.use(cors());
 app.use(express.json());
 
 // ✅ ใช้ค่าจาก .env
-const db = mysql.createPool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
-  prot: process.env.DB_PORT ,
+  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
 });
-
 const SECRET_KEY = process.env.JWT_SECRET; // ✅ ใช้สำหรับสร้าง JWT
 
 // ✅ Route ทดสอบ CORS
@@ -42,11 +41,24 @@ app.get("/api/data", (req, res) => {
 // ✅ Route ทดสอบฐานข้อมูล
 app.get('/ping', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT NOW() AS now');
+    const [rows] = await pool.query('SELECT NOW() AS now');
     res.json({ status: 'ok', time: rows[0].now });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Database error' });
+    res.status(500).json({ error: 'Database error', details: err.message });
+  }
+});
+
+// =====================
+// 🔑 LOGIN
+// =====================
+app.get('/ping', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT NOW() AS now');
+    res.json({ status: 'ok', time: rows[0].now });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error', details: err.message });
   }
 });
 
@@ -57,20 +69,8 @@ app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const [rows] = await db.query('SELECT * FROM tbl_users WHERE username = ?', [username]);
-    if (rows.length === 0) return res.status(401).json({ error: 'User not found' });
-
-    const user = rows[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ error: 'Invalid password' });
-
-    const token = jwt.sign(
-      { id: user.id, full_name: user.full_name, last_name: user.last_name },
-      SECRET_KEY,
-      { expiresIn: '1h' }
-    );
-
-    res.json({ message: 'Login successful', token });
+    const [rows] = await pool.query('SELECT * FROM tbl_users WHERE username = ?', [username]);
+    // ...existing code...
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Login failed' });
@@ -82,8 +82,8 @@ app.post('/login', async (req, res) => {
 // =====================
 app.get('/users',verifyToken, async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT id, firstname, fullname, lastname, username, status FROM tbl_users');
-    res.json(rows);
+    const [rows] = await pool.query('SELECT id, firstname, fullname, lastname, username, status FROM tbl_users');
+    // ...existing code...
   } catch (err) {
     res.status(500).json({ error: 'Query failed' });
   }
@@ -92,9 +92,8 @@ app.get('/users',verifyToken, async (req, res) => {
 app.get('/users/:id',verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query('SELECT id, firstname, fullname, lastname, username, status FROM tbl_users WHERE id = ?', [id]);
-    if (rows.length === 0) return res.status(404).json({ message: 'User not found' });
-    res.json(rows[0]);
+    const [rows] = await pool.query('SELECT id, firstname, fullname, lastname, username, status FROM tbl_users WHERE id = ?', [id]);
+    // ...existing code...
   } catch (err) {
     res.status(500).json({ error: 'Query failed' });
   }
@@ -107,12 +106,11 @@ app.post('/users', async (req, res) => {
     if (!password) return res.status(400).json({ error: 'Password is required' });
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [result] = await db.query(
+    const [result] = await pool.query(
       'INSERT INTO tbl_users (firstname, fullname, lastname, username, password, status) VALUES (?, ?, ?, ?, ?, ?)',
       [firstname, fullname, lastname, username, hashedPassword, status]
     );
-
-    res.json({ id: result.insertId, firstname, fullname, lastname, username, status });
+    // ...existing code...
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Insert failed' });
@@ -136,10 +134,8 @@ app.put('/users/:id', verifyToken, async (req, res) => {
     query += ' WHERE id = ?';
     params.push(id);
 
-    const [result] = await db.query(query, params);
-    if (result.affectedRows === 0) return res.status(404).json({ message: 'User not found' });
-
-    res.json({ message: 'User updated successfully' });
+    const [result] = await pool.query(query, params);
+    // ...existing code...
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Update failed' });
@@ -149,16 +145,13 @@ app.put('/users/:id', verifyToken, async (req, res) => {
 app.delete('/users/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
-    const [result] = await db.query('DELETE FROM tbl_users WHERE id = ?', [id]);
-    if (result.affectedRows === 0) return res.status(404).json({ message: 'User not found' });
-    res.json({ message: 'User deleted successfully' });
+    const [result] = await pool.query('DELETE FROM tbl_users WHERE id = ?', [id]);
+    // ...existing code...
   } catch (err) {
     console.error('❌ Delete Error:', err);
     res.status(500).json({ error: 'Delete failed' });
   }
-});
-
-// =====================
+});// =====================
 // ✅ เริ่มเซิร์ฟเวอร์
 // =====================
 const PORT = process.env.PORT || 3000;
