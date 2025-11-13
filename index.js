@@ -35,7 +35,7 @@ const SECRET_KEY = process.env.JWT_SECRET; // ✅ ใช้สำหรับส
 
 // ✅ Route ทดสอบ CORS
 app.get("/api/data", (req, res) => {
-  res.json({ message: "Hello, CORS!" });
+  res.json({ message: "Hello, Pisitpong!" });
 });
 
 // ✅ Route ทดสอบฐานข้อมูล
