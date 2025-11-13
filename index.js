@@ -169,7 +169,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 
 // -------------------------
-// Simple API Console (responsive + detailed usage)
+// Simple API Console (easy to use)
 // -------------------------
 app.get('/', (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -178,107 +178,139 @@ app.get('/', (req, res) => {
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>BACKEND_048 — Simple API Console</title>
+<title>BACKEND_048 — Simple API Console (Docs)</title>
 <style>
-  :root{
-    --bg:#071624; --card:#041427; --accent:#06b6d4; --muted:#9fb3c8; --text:#e6f6ff;
-    --radius:10px;
-  }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#041424,#071827);color:var(--text);font-family:Inter,system-ui,Roboto,Arial}
-  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:20px}
-  .card{width:100%;max-width:980px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03);border-radius:var(--radius);padding:18px;box-shadow:0 12px 40px rgba(2,6,23,0.6)}
-  h1{margin:0 0 6px;font-size:clamp(18px,1.8vw,22px)}
-  .muted{color:var(--muted);font-size:clamp(12px,1.2vw,14px)}
-  .top{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
-  select,input,textarea,button{border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:#021423;color:var(--text);padding:10px}
-  select,input{height:44px}
-  input[type="text"]{min-width:120px}
-  textarea{min-height:90px;resize:vertical}
-  .method{width:100px}
-  .path{flex:1;min-width:180px}
-  .btn{background:var(--accent);color:#012;border:none;padding:10px 12px;cursor:pointer;font-weight:700;border-radius:10px}
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-  .grid{display:grid;grid-template-columns:1fr 320px;gap:14px}
-  .panel{background:transparent;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-  .small{font-size:13px;color:var(--muted)}
-  pre{background:#021423;padding:10px;border-radius:8px;overflow:auto;color:#bfeefb;font-size:13px;max-height:260px}
-  .token-row{display:flex;gap:8px;align-items:center}
-  .help{margin-top:12px;background:rgba(255,255,255,0.012);padding:12px;border-radius:8px}
+  :root{--bg:#041425;--card:#041427;--accent:#06b6d4;--muted:#9fb3c8;--text:#e6f6ff}
+  body{margin:0;font-family:Inter,system-ui,Roboto,Arial;background:linear-gradient(180deg,#041425,#071827);color:var(--text);padding:18px}
+  .container{max-width:1100px;margin:0 auto}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:18px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+  h1{margin:0 0 6px}
+  .muted{color:var(--muted);font-size:14px}
+  .cols{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .left{flex:1;min-width:300px}
+  .right{width:360px}
+  .panel{background:#021423;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.02);margin-bottom:12px}
+  pre{background:#011722;padding:10px;border-radius:6px;overflow:auto;color:#bfeefb}
+  code{background:rgba(255,255,255,0.02);padding:2px 6px;border-radius:4px;color:#bfeefb}
   details summary{cursor:pointer;font-weight:700}
-  details p, details li{color:var(--muted);font-size:13px}
-  ul{padding-left:18px;margin:6px 0}
-  @media(max-width:900px){ .grid{grid-template-columns:1fr} .panel{min-height:0} }
-  @media(max-width:520px){
-    .method{width:86px}
-    .top{gap:8px}
-    textarea{min-height:120px}
-  }
+  ul{margin:6px 0 12px 18px;color:var(--muted)}
+  .btn{background:var(--accent);color:#012;padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+  .small{font-size:13px;color:var(--muted)}
+  @media(max-width:980px){.cols{flex-direction:column}.right{width:100%}}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card" role="main" aria-labelledby="title">
-      <h1 id="title">BACKEND_048 — Simple API Console</h1>
-      <p class="muted">ใช้งานรวดเร็ว: เลือก method, ใส่ path, (option) body เป็น JSON แล้วกด Send — เปิด "Use token" เพื่อแนบ Authorization</p>
+  <div class="container">
+    <div class="card">
+      <h1>BACKEND_048 — API Console & Documentation</h1>
+      <p class="muted">หน้าเดียวครบ: ทดสอบ API, ดูตัวอย่างคำสั่ง และอ่านคำอธิบายการใช้งานอย่างละเอียด</p>
 
-      <div class="top" role="region" aria-label="request controls">
-        <select id="method" class="method" aria-label="HTTP method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>PATCH</option></select>
-        <input id="path" class="path" type="text" placeholder="/ping" value="/ping" aria-label="Request path"/>
-        <button class="btn" id="send">Send</button>
-        <button class="btn ghost" id="copyCurl">Copy curl</button>
-        <label class="small" style="margin-left:auto"><input id="useToken" type="checkbox"/> Use token</label>
-      </div>
+      <div class="cols" style="margin-top:12px">
+        <div class="left">
+          <div class="panel">
+            <h3>Overview</h3>
+            <p class="small">บริการนี้มี endpoint พื้นฐานดังนี้ — ใช้หน้าเว็บนี้เพื่อทดลองเรียก API ได้ทันที</p>
+            <ul>
+              <li><code>GET /ping</code> — ตรวจสอบสถานะเซิร์ฟเวอร์</li>
+              <li><code>GET /api/data</code> — ค่า JSON ตัวอย่าง</li>
+              <li><code>POST /login</code> — รับ JWT (username/password)</li>
+              <li><code>GET /users</code> — Protected: ต้องมี JWT</li>
+            </ul>
 
-      <div class="grid">
-        <div class="panel" aria-label="request body">
-          <div style="display:flex;gap:10px;align-items:flex-start">
-            <div style="flex:1">
-              <label class="small" for="body">Body (raw JSON or text)</label>
-              <textarea id="body" placeholder='{"key":"value"}'></textarea>
-            </div>
+            <h4>Step-by-step</h4>
+            <ol class="small">
+              <li>เรียก <code>GET /ping</code> เพื่อตรวจสอบว่าเซิร์ฟเวอร์ทำงาน</li>
+              <li>ถ้าต้องการข้อมูลตัวอย่าง เรียก <code>GET /api/data</code></li>
+              <li>เพื่อรับ token: ส่ง <code>POST /login</code> โดย body เป็น JSON เช่น <pre id="loginExample">{"username":"your_user","password":"your_password"}</pre></li>
+              <li>เซิร์ฟเวอร์จะตอบกลับ JSON ที่มีฟิลด์ <code>token</code> — คัดลอกแล้วบันทึก (localStorage หรือช่อง token ของหน้า)</li>
+              <li>เรียก endpoint ที่ต้องการ JWT โดยแนบ header <code>Authorization: Bearer &lt;TOKEN&gt;</code></li>
+            </ol>
           </div>
 
-          <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
-            <div class="token-row" style="flex:1">
-              <input id="tokenInput" type="text" placeholder="paste or save token here" aria-label="token input"/>
-              <button class="btn" id="saveToken">Save</button>
-            </div>
-            <button class="btn ghost" id="loadToken">Load</button>
-            <button class="btn ghost" id="clearToken">Clear</button>
+          <div class="panel">
+            <h3>Examples (curl)</h3>
+            <p class="small">ตัวอย่างคำสั่งพร้อมใช้งานจากเครื่องคุณ</p>
+
+            <p class="small"><strong>Login</strong></p>
+            <pre>curl -X POST ${req.protocol}://${req.get('host')}/login \\
+  -H "Content-Type: application/json" \\
+  -d '{"username":"your_user","password":"your_password"}'</pre>
+
+            <p class="small"><strong>Use token to call protected endpoint</strong></p>
+            <pre>curl -X GET ${req.protocol}://${req.get('host')}/users \\
+  -H "Authorization: Bearer &lt;TOKEN&gt;"</pre>
+
+            <p class="small"><strong>Example response (login)</strong></p>
+            <pre>{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+}</pre>
           </div>
 
-          <div style="margin-top:12px" class="small">
-            Quick: <button class="btn ghost" onclick="quick('/ping')">/ping</button>
-            <button class="btn ghost" onclick="quick('/api/data')">/api/data</button>
-            <button class="btn ghost" onclick="quickProtected('/users')">/users (auth)</button>
+          <div class="panel">
+            <h3>Troubleshooting</h3>
+            <ul class="small">
+              <li>401 Unauthorized — ตรวจสอบ username/password หรือ token หมดอายุ (token มีอายุ 1 ชั่วโมง)</li>
+              <li>503 / 500 — ตรวจสอบค่าใน .env (DB connection) และดู logs ที่ Vercel / server</li>
+              <li>ไม่มี token ใน localStorage — บันทึก token โดยใช้ปุ่ม Save ในฝั่งขวา หรือวาง manual ใน header</li>
+            </ul>
           </div>
 
-          <div class="help" style="margin-top:12px">
-            <details open>
-              <summary>How to use — step by step (คลิกเพื่อขยาย/ย่อ)</summary>
-              <ol>
-                <li>เลือก HTTP method และใส่ path เช่น <code>/ping</code> หรือ <code>/users</code>.</li>
-                <li>ถ้าส่งข้อมูลให้กรอก JSON ในช่อง Body (ตัวอย่าง: <code>{"username":"user","password":"pass"}</code>).</li>
-                <li>ถ้าต้องการเรียก endpoint ที่ต้องใช้ JWT ให้ติ๊ก <strong>Use token</strong> แล้วบันทึก token ใน localStorage โดยวาง token ลงในช่องและกด <em>Save</em> หรือใช้ปุ่ม <em>Load</em> เพื่อดึง token ที่บันทึกไว้แล้ว.</li>
-                <li>กด <strong>Send</strong> เพื่อส่งคำขอ — ผลลัพธ์จะแสดงด้านขวา (status, headers, body).</li>
-                <li>กด <strong>Copy curl</strong> เพื่อคัดลอกคำสั่ง curl ที่เทียบเท่า.</li>
-              </ol>
-              <p>ตัวอย่าง curl สำหรับ login:</p>
-              <pre>curl -X POST ${req.protocol}://${req.get('host')}/login -H "Content-Type: application/json" -d '{"username":"your_user","password":"your_password"}'</pre>
-              <p>หลัง login จะได้ token ให้บันทึกลงในช่อง token แล้วใช้งานกับ endpoints ที่ต้องการ Authorization เช่น /users</p>
-            </details>
+          <div class="panel">
+            <h3>Security notes</h3>
+            <ul class="small">
+              <li>อย่าโพสต์ token หรือ password บนที่สาธารณะ</li>
+              <li>สำหรับ production ให้ใช้ HTTPS และเก็บ secret ใน environment variables</li>
+              <li>ถ้าต้องการยกเลิก token ฝั่ง server ให้ implement token blacklist (ไม่รวมในตัวอย่างนี้)</li>
+            </ul>
           </div>
         </div>
 
-        <div class="panel" aria-label="response">
-          <div class="small">Response — status / headers / body</div>
-          <pre id="status">Status: —</pre>
-          <div style="margin-top:8px"><strong class="small">Headers</strong><pre id="respHeaders">—</pre></div>
-          <div style="margin-top:8px"><strong class="small">Body</strong><pre id="respBody">—</pre></div>
+        <div class="right">
+          <div class="panel">
+            <h3>Interactive Console</h3>
+            <p class="small">กรอก method / path / body แล้วกด Send</p>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <select id="method" aria-label="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>
+              <input id="path" type="text" placeholder="/ping" value="/ping" style="flex:1"/>
+            </div>
+            <div style="margin-bottom:8px">
+              <textarea id="body" placeholder='{"key":"value"}' style="width:100%;height:90px"></textarea>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="btn" id="send">Send</button>
+              <button class="btn" id="copyCurlBtn">Copy curl</button>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="small">Token (use for protected calls)</div>
+              <input id="tokenInput" type="text" placeholder="paste token here" style="width:100%;margin-top:6px"/>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn" id="saveToken">Save</button>
+                <button class="btn" id="loadToken">Load</button>
+                <button class="btn" id="clearToken">Clear</button>
+              </div>
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="small"><strong>Response</strong></div>
+              <pre id="status">Status: —</pre>
+              <pre id="resp">Body / Headers: —</pre>
+            </div>
+          </div>
+
+          <div class="panel small" style="margin-top:12px">
+            <strong>Quick tips</strong>
+            <ul>
+              <li>ใช้ <code>/ping</code> ก่อนทุกครั้งเพื่อเช็ค</li>
+              <li>ถ้า endpoint คืนค่า JSON หน้าเว็บจะแสดงผลสวยงาม</li>
+              <li>ใช้ปุ่ม <em>Copy curl</em> เพื่อคัดลอกคำสั่งไปทดสอบบนเครื่อง</li>
+            </ul>
+          </div>
         </div>
       </div>
 
-      <p class="muted" style="margin-top:12px">Server: <span id="serverInfo">detecting...</span></p>
+      <p class="small" style="margin-top:12px">Server: <span id="serverInfo">detecting...</span></p>
     </div>
   </div>
 
@@ -286,77 +318,52 @@ app.get('/', (req, res) => {
   const base = window.location.origin;
   document.getElementById('path').value = '/ping';
 
-  function buildHeaders(){
-    const headers = {};
-    if(document.getElementById('useToken').checked){
-      const t = localStorage.getItem('api_token');
-      if(t) headers['Authorization'] = 'Bearer ' + t;
-    }
-    return headers;
-  }
+  function saveTokenToLocal(){ const v = document.getElementById('tokenInput').value.trim(); if(!v){alert('ใส่ token ก่อนกด Save'); return;} localStorage.setItem('api_token', v); alert('Token saved'); }
+  function loadTokenToInput(){ const t = localStorage.getItem('api_token') || ''; document.getElementById('tokenInput').value = t; alert(t ? 'Token loaded' : 'No token found'); }
+  function clearToken(){ localStorage.removeItem('api_token'); document.getElementById('tokenInput').value=''; alert('Token cleared'); }
 
-  async function send(){
+  async function sendReq(){
     const method = document.getElementById('method').value;
-    const path = document.getElementById('path').value.trim();
-    const bodyText = document.getElementById('body').value;
-    const headers = buildHeaders();
-    if(bodyText && !headers['Content-Type']){
-      try { JSON.parse(bodyText); headers['Content-Type']='application/json'; } catch(e){}
+    const path = document.getElementById('path').value;
+    const body = document.getElementById('body').value;
+    const headers = {};
+    const token = localStorage.getItem('api_token');
+    if(token) headers['Authorization'] = 'Bearer ' + token;
+    if(body && !headers['Content-Type']) {
+      try{ JSON.parse(body); headers['Content-Type']='application/json'; }catch(e){}
     }
     const url = path.startsWith('http') ? path : base + path;
     document.getElementById('status').textContent = 'Status: loading...';
     try {
-      const opts = { method, headers };
-      if(method !== 'GET' && method !== 'HEAD' && bodyText) opts.body = bodyText;
-      const res = await fetch(url, opts);
+      const res = await fetch(url, { method, headers, body: (method==='GET'||method==='HEAD')?undefined:body });
+      const text = await res.text();
+      const hdr = {}; res.headers.forEach((v,k)=> hdr[k]=v);
       document.getElementById('status').textContent = 'Status: ' + res.status + ' ' + res.statusText;
-      const hdrs = {}; res.headers.forEach((v,k)=> hdrs[k]=v);
-      document.getElementById('respHeaders').textContent = JSON.stringify(hdrs, null, 2);
-      const txt = await res.text();
-      try { document.getElementById('respBody').textContent = JSON.stringify(JSON.parse(txt), null, 2); } catch(e){ document.getElementById('respBody').textContent = txt; }
-    } catch (e){
+      try { document.getElementById('resp').textContent = JSON.stringify(JSON.parse(text), null, 2) + "\\n\\nHeaders:\\n" + JSON.stringify(hdr, null, 2); }
+      catch(e){ document.getElementById('resp').textContent = text + "\\n\\nHeaders:\\n" + JSON.stringify(hdr, null, 2); }
+    } catch(e){
       document.getElementById('status').textContent = 'Status: failed';
-      document.getElementById('respHeaders').textContent = 'Headers: —';
-      document.getElementById('respBody').textContent = e.message;
+      document.getElementById('resp').textContent = e.message;
     }
   }
 
-  document.getElementById('send').addEventListener('click', send);
-  document.getElementById('saveToken').addEventListener('click', ()=>{
-    const v = document.getElementById('tokenInput').value.trim();
-    if(!v) return alert('Enter token to save');
-    localStorage.setItem('api_token', v);
-    alert('Token saved (api_token)');
-  });
-  document.getElementById('loadToken').addEventListener('click', ()=>{
-    const t = localStorage.getItem('api_token') || '';
-    document.getElementById('tokenInput').value = t;
-    alert(t ? 'Token loaded into input' : 'No token found');
-  });
-  document.getElementById('clearToken').addEventListener('click', ()=>{
-    localStorage.removeItem('api_token');
-    document.getElementById('tokenInput').value = '';
-    alert('Token cleared');
-  });
+  document.getElementById('send').addEventListener('click', sendReq);
+  document.getElementById('saveToken').addEventListener('click', saveTokenToLocal);
+  document.getElementById('loadToken').addEventListener('click', loadTokenToInput);
+  document.getElementById('clearToken').addEventListener('click', clearToken);
 
-  document.getElementById('copyCurl').addEventListener('click', ()=>{
+  document.getElementById('copyCurlBtn').addEventListener('click', ()=>{
     const method = document.getElementById('method').value;
     const path = document.getElementById('path').value;
     const body = document.getElementById('body').value;
     const url = path.startsWith('http') ? path : base + path;
     let parts = ['curl -X', method, '"' + url + '"'];
-    if(document.getElementById('useToken').checked){
-      const t = localStorage.getItem('api_token');
-      if(t) parts.push('-H "Authorization: Bearer ' + t.replace(/"/g,'\\"') + '"');
-    }
+    const token = localStorage.getItem('api_token'); if(token) parts.push('-H "Authorization: Bearer ' + token.replace(/"/g,'\\"') + '"');
     if(body) parts.push("-H 'Content-Type: application/json' -d '" + body.replace(/'/g,"\\'") + "'");
     navigator.clipboard.writeText(parts.join(' ')).then(()=>alert('curl copied'));
   });
 
-  function quick(p){ document.getElementById('path').value = p; document.getElementById('method').value = 'GET'; send(); }
-  function quickProtected(p){ document.getElementById('path').value = p; document.getElementById('method').value = 'GET'; document.getElementById('useToken').checked = true; send(); }
-
-  // init server info
+  // server info
   (async ()=>{
     try {
       const r = await fetch(base + '/ping');
