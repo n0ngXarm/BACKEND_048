@@ -7,7 +7,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const verifyToken = require('./middleware/auth'); 
 
-const app = express();ฟ
+const app = express();
 
 app.use(cors());
 app.use(express.json());
