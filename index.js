@@ -1,36 +1,19 @@
+// index.js
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const { swaggerUi, specs } = require("./swagger");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-
 app.use(express.json());
-app.use(cors());
 
-// --- ROUTES ---
+// --- ลงทะเบียน Routes (แยกตามตาราง) ---
+app.use("/api/users", require("./routes/users"));         // จัดการ tbl_users
+app.use("/api/menus", require("./routes/menus"));         // จัดการ tbl_menus
+app.use("/api/customers", require("./routes/customers")); // จัดการ tbl_customers
+app.use("/api/orders", require("./routes/orders"));       // จัดการ tbl_orders
 
-// 1. ระบบสมาชิก (Login/Register) 
-// (ยังใช้ Mock Data หรือจะแก้ให้ใช้ tbl_customers ก็ได้ในอนาคต)
-app.use('/', require('./routes/users')); 
+// --- Swagger Documentation ---
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
-// 2. ระบบจัดการเมนูอาหาร (ดึงจาก tbl_menus)
-app.use('/menus', require('./routes/menus'));
-
-// 3. ระบบข้อมูลลูกค้า (ดึงจาก tbl_customers) [เพิ่มใหม่]
-// เข้าผ่าน http://localhost:5000/customers
-app.use('/customers', require('./routes/customers')); 
-
-// (แถม) ถ้าอยากเรียกสั้นๆ ว่า /cus แบบในรูป ก็เพิ่มบรรทัดนี้ได้
-app.use('/cus', require('./routes/customers'));
-
-// --- START SERVER ---
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`🚀 Server running on port ${PORT}`);
-        console.log(`🍔 Menus API:     http://localhost:${PORT}/menus`);
-        console.log(`👥 Customers API: http://localhost:${PORT}/customers`);
-    });
-}
-
-module.exports = app;
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
