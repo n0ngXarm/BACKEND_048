@@ -1,25 +1,28 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-// ใช้ createPool แทน createConnection (ดีกว่ามากกกก)
-const db = mysql.createPool({
+// สร้าง Pool การเชื่อมต่อ
+const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 });
 
-// เช็คว่าเชื่อมต่อได้ไหม
-db.getConnection((err, connection) => {
-    if (err) {
-        console.log("❌ DB Connection Failed:", err.message);
-    } else {
-        console.log("✅ Database Connected (Pool Mode)!");
-        connection.release(); // คืน connection กลับเข้า pool
-    }
-});
+// ✅ เช็คการเชื่อมต่อแบบถูกต้อง (สำหรับ Promise)
+pool.getConnection()
+    .then(connection => {
+        console.log("✅ Database Connected (Promise Mode)!");
+        connection.release(); // คืน Connection กลับเข้า Pool
+    })
+    .catch(err => {
+        console.error("❌ Database Connection Failed:");
+        console.error("   Code:", err.code);
+        console.error("   Message:", err.message);
+    });
 
-module.exports = db;
+module.exports = pool;
