@@ -10,10 +10,10 @@ class User {
     }
 
     static async create(userData) {
-        const { username, password, email, role } = userData;
+        const { username, password, gmail, role } = userData;
         // ตรวจสอบชื่อ column ให้ตรงกับใน Database จริงๆ
-        const sql = 'INSERT INTO accounts (username, password, email, role) VALUES (?, ?, ?, ?)';
-        const [result] = await db.execute(sql, [username, password, email, role || 'user']);
+        const sql = 'INSERT INTO accounts (username, password, gmail, role) VALUES (?, ?, ?, ?)';
+        const [result] = await db.execute(sql, [username, password, gmail, role || 'user']);
         return result.insertId;
     }
 }

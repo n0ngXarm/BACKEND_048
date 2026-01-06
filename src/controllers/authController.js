@@ -3,15 +3,15 @@ const User = require('../models/users'); // ตรวจสอบว่ามี
 
 exports.register = async (req, res) => {
     try {
-        const { username, password, email, role } = req.body;
+        const { username, password, gmail, role } = req.body;
         
         // เช็คว่าส่งข้อมูลมาครบไหม
-        if (!username || !password || !email) {
+        if (!username || !password || !gmail) {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
 
         // สร้าง user
-        const userData = { username, password, email, role };
+        const userData = { username, password, gmail, role };
         const userId = await User.create(userData);
         
         res.status(201).json({ 

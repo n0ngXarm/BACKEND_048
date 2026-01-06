@@ -1,41 +1,19 @@
-const { validateOrder } = require('../utils/validators');
+const Order = require('../models/orders');
 
-exports.getAllOrders = async (req, res, next) => {
-	try {
-		// ...existing code...
-		res.json([]); // placeholder
-	} catch (err) { next(err); }
+exports.getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.findAll();
+        res.json(orders);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 };
 
-exports.getOrderById = async (req, res, next) => {
-	try {
-		const id = Number(req.params.id);
-		// ...existing code...
-		res.json({ id, customerId: 1, items: [] });
-	} catch (err) { next(err); }
-};
-
-exports.createOrder = async (req, res, next) => {
-	try {
-		const { valid, errors } = validateOrder(req.body);
-		if (!valid) return res.status(400).json({ errors });
-		// ...existing code...
-		res.status(201).json({ id: 1, ...req.body });
-	} catch (err) { next(err); }
-};
-
-exports.updateOrder = async (req, res, next) => {
-	try {
-		const id = Number(req.params.id);
-		// ...existing code...
-		res.json({ id, ...req.body });
-	} catch (err) { next(err); }
-};
-
-exports.deleteOrder = async (req, res, next) => {
-	try {
-		const id = Number(req.params.id);
-		// ...existing code...
-		res.json({ message: 'Order deleted', id });
-	} catch (err) { next(err); }
+exports.createOrder = async (req, res) => {
+    try {
+        const newId = await Order.create(req.body);
+        res.status(201).json({ message: 'Order created', id: newId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 };

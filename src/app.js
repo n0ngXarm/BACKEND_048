@@ -1,23 +1,29 @@
 const express = require('express');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpecs = require('./config/swagger'); // Import Swagger Config
+const swaggerSpecs = require('./config/swagger');
 
 const app = express();
 
 // Middleware
-app.use(cors()); // ✅ 1. CORS ตามโจทย์
+app.use(cors());
 app.use(express.json());
 
-// Routes
+// Import Routes (นำเข้าเส้นทาง)
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-// const menuRoutes = require('./routes/menus'); // (ถ้ามี)
+const menuRoutes = require('./routes/menuRoutes');      // ✅ เพิ่ม
+const orderRoutes = require('./routes/orderRoutes');    // ✅ เพิ่ม
+const customerRoutes = require('./routes/customerRoutes'); // ✅ เพิ่ม
 
+// Use Routes (เปิดใช้งาน)
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes); // ✅ 2. User Routes
+app.use('/api/users', userRoutes);
+app.use('/api/menus', menuRoutes);       // ✅ เปิดใช้งาน /api/menus
+app.use('/api/orders', orderRoutes);     // ✅ เปิดใช้งาน /api/orders
+app.use('/api/customers', customerRoutes); // ✅ เปิดใช้งาน /api/customers
 
-// ✅ 3. Setup Swagger UI ที่ /api-docs
+// Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 // Default Route

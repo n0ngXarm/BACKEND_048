@@ -1,12 +1,12 @@
-const nodemailer = (() => {
-	try { return require('nodemailer'); } catch (e) { return null; }
+const nodegmailer = (() => {
+	try { return require('nodegmailer'); } catch (e) { return null; }
 })();
 
-async function sendEmail({ to, subject, text, html }) {
+async function sendGmail({ to, subject, text, html }) {
 	// Validate input
-	if (!to) throw new Error('Missing "to" address for sendEmail');
-	if (nodemailer) {
-		const transporter = nodemailer.createTransport({
+	if (!to) throw new Error('Missing "to" address for sendGmail');
+	if (nodegmailer) {
+		const transporter = nodegmailer.createTransport({
 			// Default transport: uses environment variables when available.
 			host: process.env.SMTP_HOST || 'localhost',
 			port: Number(process.env.SMTP_PORT) || 587,
@@ -17,7 +17,7 @@ async function sendEmail({ to, subject, text, html }) {
 			} : undefined
 		});
 		const info = await transporter.sendMail({
-			from: process.env.EMAIL_FROM || 'noreply@example.com',
+			from: process.env.GMAIL_FROM || 'noreply@example.com',
 			to,
 			subject,
 			text,
@@ -25,9 +25,9 @@ async function sendEmail({ to, subject, text, html }) {
 		});
 		return info;
 	}
-	// Fallback: log the email for development/testing
-	console.log('sendEmail fallback:', { to, subject, text, html });
+	// Fallback: log the gmail for development/testing
+	console.log('sendGmail fallback:', { to, subject, text, html });
 	return { accepted: [to], fallback: true };
 }
 
-module.exports = { sendEmail };
+module.exports = { sendGmail };
