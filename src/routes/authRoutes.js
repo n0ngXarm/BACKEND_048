@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const verifyToken = require('../middleware/auth'); // if present
 
 /**
  * @swagger
  * tags:
- *   name: Auth
- *   description: Authentication (Login & Register)
+ *   - name: Auth
+ *     description: Authentication endpoints
  */
 
 /**
@@ -72,19 +73,5 @@ router.post('/register', authController.register);
  *         description: Invalid credentials
  */
 router.post('/login', authController.login);
-
-/**
- * @swagger
- * /api/auth/logout:
- * post:
- * summary: Logout user
- * tags: [Auth]
- * security:
- * - bearerAuth: []
- * responses:
- * 200:
- * description: Logged out successfully
- */
-router.post('/logout', authController.logout);
 
 module.exports = router;
