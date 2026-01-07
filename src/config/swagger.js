@@ -1,3 +1,5 @@
+// src/config/swagger.js
+
 const swaggerJsdoc = require("swagger-jsdoc");
 const path = require("path");
 
@@ -11,8 +13,9 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:5000",
-        description: "Local Development Server",
+        // ⚠️ แก้ตรงนี้! เปลี่ยนจาก "http://localhost:5000" เป็น "/"
+        url: "/", 
+        description: "Auto-detect Server (Local & Production)",
       },
     ],
     components: {
@@ -25,7 +28,6 @@ const options = {
       },
     },
   },
-  // ชี้ไปที่ไฟล์ Routes เพื่อดึง Comment มาสร้าง Docs
   apis: [path.join(__dirname, "../routes/*.js")], 
 };
 

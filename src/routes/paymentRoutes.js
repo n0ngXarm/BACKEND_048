@@ -1,34 +1,34 @@
 const express = require('express');
 const router = express.Router();
-const menuController = require('../controllers/menuController');
+const controller = require('../controllers/paymentController');
 
 /**
  * @swagger
  * tags:
- *   - name: Menus
- *     description: Menu management
+ *   - name: Payments
+ *     description: Payment management
  */
 
 /**
  * @swagger
- * /api/menus:
+ * /api/payments:
  *   get:
- *     summary: Get all menus
+ *     summary: Get all payments
  *     tags:
- *       - Menus
+ *       - Payments
  *     responses:
  *       '200':
- *         description: List of menus
+ *         description: Success
  */
-router.get('/', menuController.getAllMenus);
+router.get('/', controller.getAll);
 
 /**
  * @swagger
- * /api/menus/{id}:
+ * /api/payments/{id}:
  *   get:
- *     summary: Get menu by ID
+ *     summary: Get payment by ID
  *     tags:
- *       - Menus
+ *       - Payments
  *     parameters:
  *       - in: path
  *         name: id
@@ -37,19 +37,17 @@ router.get('/', menuController.getAllMenus);
  *           type: integer
  *     responses:
  *       '200':
- *         description: Menu details
- *       '404':
- *         description: Menu not found
+ *         description: Detail
  */
-router.get('/:id', menuController.getMenuById);
+router.get('/:id', controller.getById);
 
 /**
  * @swagger
- * /api/menus:
+ * /api/payments:
  *   post:
- *     summary: Create new menu
+ *     summary: Record new payment
  *     tags:
- *       - Menus
+ *       - Payments
  *     requestBody:
  *       required: true
  *       content:
@@ -57,25 +55,27 @@ router.get('/:id', menuController.getMenuById);
  *           schema:
  *             type: object
  *             properties:
- *               menu_name:
+ *               order_id:
+ *                 type: integer
+ *               payment_method:
  *                 type: string
- *               price:
+ *               payment_amount:
  *                 type: number
- *               image:
+ *               payment_status:
  *                 type: string
  *     responses:
  *       '201':
- *         description: Menu created
+ *         description: Created
  */
-router.post('/', menuController.createMenu);
+router.post('/', controller.create);
 
 /**
  * @swagger
- * /api/menus/{id}:
+ * /api/payments/{id}:
  *   put:
- *     summary: Update menu
+ *     summary: Update payment status
  *     tags:
- *       - Menus
+ *       - Payments
  *     parameters:
  *       - in: path
  *         name: id
@@ -89,25 +89,21 @@ router.post('/', menuController.createMenu);
  *           schema:
  *             type: object
  *             properties:
- *               menu_name:
- *                 type: string
- *               price:
- *                 type: number
- *               image:
+ *               payment_status:
  *                 type: string
  *     responses:
  *       '200':
- *         description: Menu updated successfully
+ *         description: Updated
  */
-router.put('/:id', menuController.updateMenu);
+router.put('/:id', controller.update);
 
 /**
  * @swagger
- * /api/menus/{id}:
+ * /api/payments/{id}:
  *   delete:
- *     summary: Delete menu
+ *     summary: Delete payment
  *     tags:
- *       - Menus
+ *       - Payments
  *     parameters:
  *       - in: path
  *         name: id
@@ -116,8 +112,8 @@ router.put('/:id', menuController.updateMenu);
  *           type: integer
  *     responses:
  *       '200':
- *         description: Menu deleted successfully
+ *         description: Deleted
  */
-router.delete('/:id', menuController.deleteMenu);
+router.delete('/:id', controller.delete);
 
 module.exports = router;

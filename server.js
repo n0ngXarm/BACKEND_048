@@ -3,9 +3,13 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-    console.log(`🔧 Environment: ${process.env.NODE_ENV}`);
-});
+// เช็คว่ารันบน Vercel หรือรันเครื่องตัวเอง
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+}
+
+module.exports = app; // 👈 สำคัญมาก! ต้อง export app ออกไปให้ Vercel ใช้
