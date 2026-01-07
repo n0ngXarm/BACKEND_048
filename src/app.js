@@ -3,6 +3,7 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
 
+
 const app = express();
 
 // Middleware
@@ -31,8 +32,14 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 // Default Route
-app.get('/', (req, res) => {
-    res.send('API Backend is running! Access docs at <a href="/api-docs">/api-docs</a>');
-});
+const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css";
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpecs, {
+    customCssUrl: CSS_URL,
+  })
+);
 
 module.exports = app;
