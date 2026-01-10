@@ -3,6 +3,10 @@ const router = express.Router();
 const authController = require('../controllers/authController');
 const verifyToken = require('../middleware/auth'); // if present
 
+if (!authController || !authController.login) {
+    console.error("❌ Error: authController failed to load functions!");
+}
+
 /**
  * @swagger
  * tags:
@@ -73,5 +77,7 @@ router.post('/register', authController.register);
  *         description: Invalid credentials
  */
 router.post('/login', authController.login);
+
+router.post('/logout', authController.logout);
 
 module.exports = router;

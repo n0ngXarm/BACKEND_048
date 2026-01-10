@@ -1,9 +1,9 @@
-// src/config/db.js
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
+// เชื่อมต่อ Database ของจริง
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -15,5 +15,5 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-// ⭐ สำคัญมาก! ต้องมี .promise() ตรงนี้
+// ✅ สำคัญมาก: ต้องมี .promise()
 module.exports = pool.promise();
