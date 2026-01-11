@@ -1,52 +1,37 @@
+// src/app.js
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpecs = require('./config/swagger');
+const swaggerSpec = require('./config/swagger'); // เรียก config/swagger.js
+const { errorHandler } = require('./middleware/errorMiddleware');
+
+// Import Routes (เดี๋ยวเราค่อยไปใส่โค้ดในไฟล์ routes ทีหลัง)
+const authRoutes = require('./routes/authRoutes');
+const restaurantRoutes = require('./routes/restaurantRoutes');
+const menuRoutes = require('./routes/menuRoutes');
 
 const app = express();
 
-// Middleware
+// Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(morgan('dev'));
 
-// Import Routes (นำเข้าเส้นทาง)
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const menuRoutes = require('./routes/menuRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const customerRoutes = require('./routes/customerRoutes');
-const restaurantRoutes = require('./routes/restaurantRoutes');
-const paymentRoutes = require('./routes/paymentRoutes');
+// Swagger Route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Use Routes (เปิดใช้งาน)
+// API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/menus', menuRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/customers', customerRoutes);
 app.use('/api/restaurants', restaurantRoutes);
-app.use('/api/payments', paymentRoutes);
+app.use('/api/menus', menuRoutes);
 
-// ==========================================
-// 🚀 Swagger UI Setup (Vercel Fix)
-// ==========================================
-const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css";
-const JS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.js";
-const JS_PRESET_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.js";
-
-app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpecs, {
-    customCssUrl: CSS_URL,
-    customJs: [JS_URL, JS_PRESET_URL],
-    customSiteTitle: "Food API Docs"
-  })
-);
-
-// Default Route (เผื่อเข้าหน้าแรก)
+// Test Route
 app.get('/', (req, res) => {
-    res.send('API Backend is running! Access docs at <a href="/api-docs">/api-docs</a>');
+    res.send('Food Delivery API is running (Pro Version)...');
 });
+
+// Error Middleware (ต้องอยู่ล่างสุด)
+app.use(errorHandler);
 
 module.exports = app;

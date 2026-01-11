@@ -1,26 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
-const verifyToken = require('../middleware/auth'); // if present
-
-if (!authController || !authController.login) {
-    console.error("❌ Error: authController failed to load functions!");
-}
 
 /**
  * @swagger
  * tags:
  *   - name: Auth
- *     description: Authentication endpoints
+ *     description: User authentication (Register & Login)
  */
 
 /**
  * @swagger
- * /api/auth/register:
+ * /auth/register:
  *   post:
- *     summary: Register a new user
- *     tags:
- *       - Auth
+ *     summary: Register a new customer
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -30,32 +23,34 @@ if (!authController || !authController.login) {
  *             required:
  *               - username
  *               - password
- *               - firstname
- *               - lastname
+ *               - fullname
  *             properties:
+ *               fullname:
+ *                 type: string
  *               username:
  *                 type: string
  *               password:
  *                 type: string
- *               firstname:
+ *               email:
  *                 type: string
- *               lastname:
+ *               phone_number:
+ *                 type: string
+ *               address:
  *                 type: string
  *     responses:
  *       201:
- *         description: User registered
- *       400:
- *         description: Validation error
+ *         description: User registered successfully
  */
-router.post('/register', authController.register);
+router.post('/register', (req, res) => {
+  res.status(201).json({ message: 'User registered successfully (placeholder)' });
+});
 
 /**
  * @swagger
- * /api/auth/login:
+ * /auth/login:
  *   post:
- *     summary: Login user
- *     tags:
- *       - Auth
+ *     summary: Login to get Access Token
+ *     tags: [Auth]
  *     requestBody:
  *       required: true
  *       content:
@@ -72,12 +67,10 @@ router.post('/register', authController.register);
  *                 type: string
  *     responses:
  *       200:
- *         description: Successful login
- *       401:
- *         description: Invalid credentials
+ *         description: Login successful
  */
-router.post('/login', authController.login);
-
-router.post('/logout', authController.logout);
+router.post('/login', (req, res) => {
+  res.json({ message: 'Login successful (placeholder)', accessToken: 'dummy' });
+});
 
 module.exports = router;

@@ -1,15 +1,14 @@
-const app = require('./src/app');
+// server.js
+const app = require('./src/app'); // ชี้เข้าไปในโฟลเดอร์ src
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
-// เช็คว่ารันบน Vercel หรือรันเครื่องตัวเอง
-if (require.main === module) {
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-    });
-}
-
-module.exports = app; // 👈 สำคัญมาก! ต้อง export app ออกไปให้ Vercel ใช้
+app.listen(PORT, () => {
+    console.log(`-----------------------------------------`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📄 Swagger Docs: http://localhost:${PORT}/api-docs`);
+    console.log(`-----------------------------------------`);
+});

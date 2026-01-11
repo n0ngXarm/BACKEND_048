@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/restaurantController');
+const restaurantController = require('../controllers/restaurantController');
+// const { verifyToken } = require('../middleware/auth');
 
 /**
  * @swagger
  * tags:
- *   - name: Restaurants
- *     description: Restaurant management
+ *   name: Restaurants
+ *   description: Restaurant management
  */
 
 /**
@@ -17,9 +18,9 @@ const controller = require('../controllers/restaurantController');
  *     tags: [Restaurants]
  *     responses:
  *       200:
- *         description: Success
+ *         description: List of all restaurants
  */
-router.get('/', controller.getAll);
+router.get('/', restaurantController.getAllRestaurants);
 
 /**
  * @swagger
@@ -35,24 +36,29 @@ router.get('/', controller.getAll);
  *           type: integer
  *     responses:
  *       200:
- *         description: Detail
+ *         description: Restaurant details
  *       404:
- *         description: Not found
+ *         description: Restaurant not found
  */
-router.get('/:id', controller.getById);
+router.get('/:id', restaurantController.getRestaurantById);
 
 /**
  * @swagger
  * /api/restaurants:
  *   post:
- *     summary: Create restaurant
+ *     summary: Create a new restaurant (Admin only)
  *     tags: [Restaurants]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - restaurant_name
+ *               - address
  *             properties:
  *               restaurant_name:
  *                 type: string
@@ -64,63 +70,9 @@ router.get('/:id', controller.getById);
  *                 type: string
  *     responses:
  *       201:
- *         description: Created
+ *         description: Restaurant created
  */
-router.post('/', controller.create);
-
-/**
- * @swagger
- * /api/restaurants/{id}:
- *   put:
- *     summary: Update restaurant
- *     tags: [Restaurants]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               restaurant_name:
- *                 type: string
- *               address:
- *                 type: string
- *               phone:
- *                 type: string
- *               menu_description:
- *                 type: string
- *     responses:
- *       200:
- *         description: Updated
- *       404:
- *         description: Not found
- */
-router.put('/:id', controller.update);
-
-/**
- * @swagger
- * /api/restaurants/{id}:
- *   delete:
- *     summary: Delete restaurant
- *     tags: [Restaurants]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Deleted
- *       404:
- *         description: Not found
- */
-router.delete('/:id', controller.delete);
+router.post('/', restaurantController.createRestaurant);
+// router.post('/', verifyToken, restaurantController.createRestaurant);
 
 module.exports = router;

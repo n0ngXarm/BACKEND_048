@@ -1,123 +1,68 @@
 const express = require('express');
 const router = express.Router();
 const menuController = require('../controllers/menuController');
+// const { verifyToken, isAdmin } = require('../middleware/auth');
 
 /**
  * @swagger
  * tags:
- *   - name: Menus
- *     description: Menu management
+ *   name: Menus
+ *   description: Menu management
  */
 
 /**
  * @swagger
- * /api/menus:
+ * /menus/restaurant/{restaurantId}:
  *   get:
- *     summary: Get all menus
- *     tags:
- *       - Menus
- *     responses:
- *       '200':
- *         description: List of menus
- */
-router.get('/', menuController.getAllMenus);
-
-/**
- * @swagger
- * /api/menus/{id}:
- *   get:
- *     summary: Get menu by ID
- *     tags:
- *       - Menus
+ *     summary: Get all menus of a specific restaurant
+ *     tags: [Menus]
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: restaurantId
  *         required: true
  *         schema:
  *           type: integer
+ *         description: ID of the restaurant
  *     responses:
- *       '200':
- *         description: Menu details
- *       '404':
- *         description: Menu not found
+ *       200:
+ *         description: List of menus
  */
-router.get('/:id', menuController.getMenuById);
+router.get('/restaurant/:restaurantId', menuController.getMenusByRestaurant);
 
 /**
  * @swagger
  * /api/menus:
  *   post:
- *     summary: Create new menu
- *     tags:
- *       - Menus
+ *     summary: Create a new menu (Admin only)
+ *     tags: [Menus]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - restaurant_id
+ *               - menu_name
+ *               - price
  *             properties:
+ *               restaurant_id:
+ *                 type: integer
  *               menu_name:
+ *                 type: string
+ *               description:
  *                 type: string
  *               price:
  *                 type: number
- *               image:
+ *               category:
  *                 type: string
  *     responses:
- *       '201':
- *         description: Menu created
+ *       201:
+ *         description: Menu created successfully
  */
 router.post('/', menuController.createMenu);
-
-/**
- * @swagger
- * /api/menus/{id}:
- *   put:
- *     summary: Update menu
- *     tags:
- *       - Menus
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               menu_name:
- *                 type: string
- *               price:
- *                 type: number
- *               image:
- *                 type: string
- *     responses:
- *       '200':
- *         description: Menu updated successfully
- */
-router.put('/:id', menuController.updateMenu);
-
-/**
- * @swagger
- * /api/menus/{id}:
- *   delete:
- *     summary: Delete menu
- *     tags:
- *       - Menus
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       '200':
- *         description: Menu deleted successfully
- */
-router.delete('/:id', menuController.deleteMenu);
+// router.post('/', verifyToken, isAdmin, menuController.createMenu);
 
 module.exports = router;

@@ -11,18 +11,31 @@
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.21.2",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
     "gatsby": "^3.3.1",
     "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.6.5",
+    "morgan": "^1.10.1",
+    "mysql2": "^3.16.0",
     "promise": "^8.3.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^30.2.0",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.1.11",
     "supertest": "^7.1.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n0ngXarm/BACKEND_048.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/n0ngXarm/BACKEND_048/issues"
+  },
+  "homepage": "https://github.com/n0ngXarm/BACKEND_048#readme"
 }

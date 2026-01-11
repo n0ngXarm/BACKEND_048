@@ -1,33 +1,39 @@
-const Restaurant = require('../models/restaurants');
+const Restaurant = require('../models/restaurantModel');
 
-exports.getAll = async (req, res) => {
-    try { const rows = await Restaurant.findAll(); res.json(rows); } catch (err) { res.status(500).json({ error: err.message }); }
-};
-
-exports.getById = async (req, res) => {
+// Get All Restaurants
+exports.getAllRestaurants = async (req, res) => {
     try {
-        const row = await Restaurant.findById(req.params.id);
-        if (!row) return res.status(404).json({ message: 'Not found' });
-        res.json(row);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+        const restaurants = await Restaurant.findAll();
+        res.status(200).json(restaurants);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
-exports.create = async (req, res) => {
-    try { const id = await Restaurant.create(req.body); res.status(201).json({ message: 'Created', id }); } catch (err) { res.status(500).json({ error: err.message }); }
-};
-
-exports.update = async (req, res) => {
+// Get Single Restaurant
+exports.getRestaurantById = async (req, res) => {
     try {
-        const affected = await Restaurant.update(req.params.id, req.body);
-        if (affected === 0) return res.status(404).json({ message: 'Not found' });
-        res.json({ message: 'Updated' });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+        const restaurant = await Restaurant.findById(req.params.id);
+        if (!restaurant) return res.status(404).json({ message: 'Restaurant not found' });
+        res.status(200).json(restaurant);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };
 
-exports.delete = async (req, res) => {
+// Create Restaurant (Admin Only)
+exports.createRestaurant = async (req, res) => {
     try {
-        const affected = await Restaurant.delete(req.params.id);
-        if (affected === 0) return res.status(404).json({ message: 'Not found' });
-        res.json({ message: 'Deleted' });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+        const { restaurant_name, address, phone, menu_description } = req.body;
+        
+        // Validation ง่ายๆ
+        if (!restaurant_name || !address) {
+            return res.status(400).json({ message: 'Name and Address are required' });
+        }
+
+        const newId = await Restaurant.create({ restaurant_name, address, phone, menu_description });
+        res.status(201).json({ message: 'Restaurant created successfully', id: newId });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 };

@@ -1,125 +1,21 @@
-const express = require('express');
-const router = express.Router();
-const customerController = require('../controllers/customerController');
+const db = require('../config/db');
 
-/**
- * @swagger
- * tags:
- *   - name: Customers
- *     description: Customer management
- */
+class Customer {
+    // หา user จาก username (ใช้ตอน Login)
+    static async findByUsername(username) {
+        const [rows] = await db.query('SELECT * FROM tbl_customers WHERE username = ?', [username]);
+        return rows[0];
+    }
 
-/**
- * @swagger
- * /api/customers:
- *   get:
- *     summary: Get all customers
- *     tags:
- *       - Customers
- *     responses:
- *       200:
- *         description: List of customers
- */
-router.get('/', customerController.getAllCustomers);
+    // สร้าง user ใหม่ (ใช้ตอน Register)
+    static async create(userData) {
+        const { fullname, username, password, email, phone_number, address } = userData;
+        const [result] = await db.query(
+            'INSERT INTO tbl_customers (fullname, username, password, gmail, phone_number, address) VALUES (?, ?, ?, ?, ?, ?)',
+            [fullname, username, password, email, phone_number, address]
+        );
+        return result.insertId;
+    }
+}
 
-/**
- * @swagger
- * /api/customers:
- *   post:
- *     summary: Create a new customer
- *     tags:
- *       - Customers
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *               firstname:
- *                 type: string
- *               lastname:
- *                 type: string
- *     responses:
- *       201:
- *         description: Customer created
- */
-router.post('/', customerController.createCustomer);
-// ... (โค้ดเดิมด้านบน)
-
-/**
- * @swagger
- * /api/customers/{id}:
- *   get:
- *     summary: Get customer by ID
- *     tags:
- *       - Customers
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Customer details
- */
-router.get('/:id', customerController.getCustomerById);
-
-/**
- * @swagger
- * /api/customers/{id}:
- *   put:
- *     summary: Update customer
- *     tags:
- *       - Customers
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               fullname:
- *                 type: string
- *               lastname:
- *                 type: string
- *               phone:
- *                 type: string
- *               email:
- *                 type: string
- *     responses:
- *       200:
- *         description: Updated successfully
- */
-router.put('/:id', customerController.updateCustomer);
-
-/**
- * @swagger
- * /api/customers/{id}:
- *   delete:
- *     summary: Delete customer
- *     tags:
- *       - Customers
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Deleted successfully
- */
-router.delete('/:id', customerController.deleteCustomer);
-
-module.exports = router;
-
+module.exports = Customer;
