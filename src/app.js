@@ -40,7 +40,7 @@ app.use(
   swaggerUi.setup(swaggerSpecs, {
     customCssUrl: CSS_URL,
     customJs: [JS_URL, JS_PRESET_URL],
-    customSiteTitle: "Food API Docs"
+    customSiteTitle: "Swagger API"
   })
 );
 
