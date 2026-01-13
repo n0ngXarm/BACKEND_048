@@ -1,37 +1,34 @@
-// src/app.js
 const express = require('express');
 const cors = require('cors');
-const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./config/swagger'); // เรียก config/swagger.js
-const { errorHandler } = require('./middleware/errorMiddleware');
-
-// Import Routes (เดี๋ยวเราค่อยไปใส่โค้ดในไฟล์ routes ทีหลัง)
-const authRoutes = require('./routes/authRoutes');
-const restaurantRoutes = require('./routes/restaurantRoutes');
-const menuRoutes = require('./routes/menuRoutes');
+const swaggerSpecs = require('./config/swagger');
 
 const app = express();
 
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(morgan('dev'));
 
-// Swagger Route
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Import Routes (นำเข้าเส้นทาง)
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const menuRoutes = require('./routes/menuRoutes');      // ✅ เพิ่ม
+const orderRoutes = require('./routes/orderRoutes');    // ✅ เพิ่ม
+const customerRoutes = require('./routes/customerRoutes'); // ✅ เพิ่ม
 
-// API Routes
+// Use Routes (เปิดใช้งาน)
 app.use('/api/auth', authRoutes);
-app.use('/api/restaurants', restaurantRoutes);
-app.use('/api/menus', menuRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/menus', menuRoutes);       // ✅ เปิดใช้งาน /api/menus
+app.use('/api/orders', orderRoutes);     // ✅ เปิดใช้งาน /api/orders
+app.use('/api/customers', customerRoutes); // ✅ เปิดใช้งาน /api/customers
 
-// Test Route
+// Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
+// Default Route
 app.get('/', (req, res) => {
-    res.send('Food Delivery API is running (Pro Version)...');
+    res.send('API Backend is running! Access docs at <a href="/api-docs">/api-docs</a>');
 });
-
-// Error Middleware (ต้องอยู่ล่างสุด)
-app.use(errorHandler);
 
 module.exports = app;

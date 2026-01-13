@@ -1,21 +1,51 @@
-const db = require('../config/db');
+const express = require('express');
+const router = express.Router();
+const customerController = require('../controllers/customerController');
 
-class Customer {
-    // หา user จาก username (ใช้ตอน Login)
-    static async findByUsername(username) {
-        const [rows] = await db.query('SELECT * FROM tbl_customers WHERE username = ?', [username]);
-        return rows[0];
-    }
+/**
+ * @swagger
+ * tags:
+ *   - name: Customers
+ *     description: Customer management
+ */
 
-    // สร้าง user ใหม่ (ใช้ตอน Register)
-    static async create(userData) {
-        const { fullname, username, password, email, phone_number, address } = userData;
-        const [result] = await db.query(
-            'INSERT INTO tbl_customers (fullname, username, password, gmail, phone_number, address) VALUES (?, ?, ?, ?, ?, ?)',
-            [fullname, username, password, email, phone_number, address]
-        );
-        return result.insertId;
-    }
-}
+/**
+ * @swagger
+ * /api/customers:
+ *   get:
+ *     summary: Get all customers
+ *     tags:
+ *       - Customers
+ *     responses:
+ *       200:
+ *         description: List of customers
+ */
+router.get('/', customerController.getAllCustomers);
 
-module.exports = Customer;
+/**
+ * @swagger
+ * /api/customers:
+ *   post:
+ *     summary: Create a new customer
+ *     tags:
+ *       - Customers
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               firstname:
+ *                 type: string
+ *               lastname:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Customer created
+ */
+router.post('/', customerController.createCustomer);
+
+module.exports = router;

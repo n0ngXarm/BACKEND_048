@@ -1,30 +1,34 @@
-// src/config/swagger.js
-const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerJsdoc = require("swagger-jsdoc");
+const path = require("path");
 
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Food Delivery API',
-      version: '1.0.0',
-      description: 'API Documentation',
+      title: "BackEnd API (Pro Version)",
+      version: "1.0.0",
+      description: "API Documentation for Food Ordering System",
     },
     servers: [
-      { url: 'http://localhost:5000/api' },
+      {
+        url: "http://localhost:5000",
+        description: "Local Development Server",
+      },
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
         },
       },
     },
   },
-  // ⚠️ สำคัญ: ต้องชี้ path ไปที่ src/routes เพราะเรารันจาก root
-  apis: ['./src/routes/*.js'], 
+  // ชี้ไปที่ไฟล์ Routes เพื่อดึง Comment มาสร้าง Docs
+  apis: [path.join(__dirname, "../routes/*.js")], 
 };
 
-const swaggerSpec = swaggerJsdoc(options);
-module.exports = swaggerSpec;
+const specs = swaggerJsdoc(options);
+
+module.exports = specs;

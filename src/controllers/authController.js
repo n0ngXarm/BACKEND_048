@@ -1,55 +1,68 @@
-const Customer = require('../models/customerModel');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+// src/controllers/authController.js
+const User = require('../models/users'); // ตรวจสอบว่ามีไฟล์ models/users.js จริงไหม
 
-// Register
 exports.register = async (req, res) => {
     try {
-        const { fullname, username, password, email, phone_number, address } = req.body;
+        const { username, password, gmail, role } = req.body;
+        
+        // เช็คว่าส่งข้อมูลมาครบไหม
+        if (!username || !password || !gmail) {
+            return res.status(400).json({ message: 'Please provide all required fields' });
+        }
 
-        // เช็คว่ามี user นี้หรือยัง (Optional: ไปทำเพิ่มได้)
-
-        // เข้ารหัส Password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // บันทึกลง Database
-        await Customer.create({
-            fullname, username, password: hashedPassword, email, phone_number, address
+        // สร้าง user
+        const userData = { username, password, gmail, role };
+        const userId = await User.create(userData);
+        
+        res.status(201).json({ 
+            success: true,
+            message: 'User registered successfully', 
+            userId 
         });
-
-        res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Register Error:', error);
+        res.status(500).json({ success: false, message: 'Register failed' });
     }
 };
 
-// Login
 exports.login = async (req, res) => {
     try {
         const { username, password } = req.body;
+        
+        const user = await User.findByUsername(username);
 
-        // หา User
-        const user = await Customer.findByUsername(username);
-        if (!user) return res.status(404).json({ message: 'User not found' });
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
 
-        // เช็ค Password
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
-
-        // สร้าง JWT Token
-        const token = jwt.sign(
-            { id: user.id, role: user.status || 'customer' }, // user.status คือ admin/user
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' }
-        );
+        if (user.password !== password) {
+            return res.status(401).json({ success: false, message: 'Invalid password' });
+        }
 
         res.json({ 
-            message: 'Login successful',
-            token,
-            user: { id: user.id, username: user.username, fullname: user.fullname }
+            success: true,
+            message: 'Login successful', 
+            user: { 
+                id: user.id, 
+                username: user.username, 
+                role: user.role 
+            } 
+        });
+
+    } catch (error) {
+        console.error('Login Error:', error);
+        res.status(500).json({ success: false, message: 'Login failed' });
+    }
+};
+exports.logout = async (req, res) => {
+    try {
+        // ในระบบ JWT ปกติเราไม่ต้องทำอะไรฝั่ง Server มากนัก
+        // แค่บอก Client ให้ลบ Token ทิ้ง
+        res.status(200).json({ 
+            success: true, 
+            message: 'Logged out successfully' 
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, message: 'Logout failed' });
     }
 };

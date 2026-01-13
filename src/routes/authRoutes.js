@@ -1,19 +1,22 @@
 const express = require('express');
 const router = express.Router();
+const authController = require('../controllers/authController');
+const verifyToken = require('../middleware/auth'); // if present
 
 /**
  * @swagger
  * tags:
  *   - name: Auth
- *     description: User authentication (Register & Login)
+ *     description: Authentication endpoints
  */
 
 /**
  * @swagger
- * /auth/register:
+ * /api/auth/register:
  *   post:
- *     summary: Register a new customer
- *     tags: [Auth]
+ *     summary: Register a new user
+ *     tags:
+ *       - Auth
  *     requestBody:
  *       required: true
  *       content:
@@ -23,34 +26,32 @@ const router = express.Router();
  *             required:
  *               - username
  *               - password
- *               - fullname
+ *               - firstname
+ *               - lastname
  *             properties:
- *               fullname:
- *                 type: string
  *               username:
  *                 type: string
  *               password:
  *                 type: string
- *               email:
+ *               firstname:
  *                 type: string
- *               phone_number:
- *                 type: string
- *               address:
+ *               lastname:
  *                 type: string
  *     responses:
  *       201:
- *         description: User registered successfully
+ *         description: User registered
+ *       400:
+ *         description: Validation error
  */
-router.post('/register', (req, res) => {
-  res.status(201).json({ message: 'User registered successfully (placeholder)' });
-});
+router.post('/register', authController.register);
 
 /**
  * @swagger
- * /auth/login:
+ * /api/auth/login:
  *   post:
- *     summary: Login to get Access Token
- *     tags: [Auth]
+ *     summary: Login user
+ *     tags:
+ *       - Auth
  *     requestBody:
  *       required: true
  *       content:
@@ -67,10 +68,10 @@ router.post('/register', (req, res) => {
  *                 type: string
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Successful login
+ *       401:
+ *         description: Invalid credentials
  */
-router.post('/login', (req, res) => {
-  res.json({ message: 'Login successful (placeholder)', accessToken: 'dummy' });
-});
+router.post('/login', authController.login);
 
 module.exports = router;

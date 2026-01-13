@@ -1,14 +1,11 @@
-// server.js
-const app = require('./src/app'); // ชี้เข้าไปในโฟลเดอร์ src
+const app = require('./src/app');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`-----------------------------------------`);
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📄 Swagger Docs: http://localhost:${PORT}/api-docs`);
-    console.log(`-----------------------------------------`);
+    console.log(`🚀 Server is running on port ${PORT}`);
+    console.log(`🔧 Environment: ${process.env.NODE_ENV}`);
 });

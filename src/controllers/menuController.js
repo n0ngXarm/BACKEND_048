@@ -1,29 +1,19 @@
-const Menu = require('../models/menuModel');
+const Menu = require('../models/menus');
 
-// ดึงเมนูทั้งหมดของร้านที่ระบุ (เช่น ดูเมนูของร้าน ID 1)
-exports.getMenusByRestaurant = async (req, res) => {
+exports.getAllMenus = async (req, res) => {
     try {
-        const { restaurantId } = req.params;
-        const menus = await Menu.findByRestaurantId(restaurantId);
-        res.status(200).json(menus);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+        const menus = await Menu.findAll();
+        res.json(menus);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
 
-// เพิ่มเมนูใหม่ (Admin เท่านั้น)
 exports.createMenu = async (req, res) => {
     try {
-        const { restaurant_id, menu_name, description, price, category } = req.body;
-
-        // Validation
-        if (!restaurant_id || !menu_name || !price) {
-            return res.status(400).json({ message: 'Restaurant ID, Name, and Price are required' });
-        }
-
-        const newId = await Menu.create({ restaurant_id, menu_name, description, price, category });
-        res.status(201).json({ message: 'Menu created successfully', id: newId });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+        const newId = await Menu.create(req.body);
+        res.status(201).json({ message: 'Menu created', id: newId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
