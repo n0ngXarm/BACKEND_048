@@ -24,7 +24,7 @@ const options = {
       url: "https://github.com/n0ngXarm/BackEnd_048",
     },
     servers: [
-      { url: "/", description: "Auto (Local/Prod)" },
+      { url: "/", description: "Auto-detect Server (Local & Production)" },
       { url: "http://localhost:3000", description: "Local" },
     ],
     tags: [
