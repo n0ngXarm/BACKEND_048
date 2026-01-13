@@ -3,7 +3,7 @@ const path = require("path");
 
 const options = {
   definition: {
-    openapi: "3.0.0",
+    openapi: "1.0.0",
     info: {
       title: "BackEnd API (Pro Version)",
       version: "1.0.0",
