@@ -46,3 +46,16 @@ exports.deleteCustomer = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+exports.update = async (req, res) => {
+    try {
+        // 🔍 เพิ่มบรรทัดนี้เพื่อดูค่าที่ส่งมา
+        console.log("Update Data Recieved:", req.body); 
+
+        const affected = await Restaurant.update(req.params.id, req.body);
+        if (affected === 0) return res.status(404).json({ message: 'Not found' });
+        res.json({ message: 'Updated' });
+    } catch (err) { 
+        console.error(err); // 🔍 ให้มันฟ้อง Error ออกมา
+        res.status(500).json({ error: err.message }); 
+    }
+};

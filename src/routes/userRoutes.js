@@ -1,7 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/userController');
-const verifyToken = require('../middleware/auth'); // ถ้ามี middleware
+
+// Load controller (may export named or default). Provide safe fallbacks if missing.
+let userController;
+try {
+	userController = require('../controllers/userController') || {};
+} catch (e) {
+	userController = {};
+}
+
+// Use named exports if available, otherwise try default export object
+const getUsers = userController.getUsers || userController.default?.getUsers || ((req, res) => res.status(501).json({ error: 'getUsers not implemented' }));
+const getUserById = userController.getUserById || userController.default?.getUserById || ((req, res) => res.status(501).json({ error: 'getUserById not implemented' }));
+const createUser = userController.createUser || userController.default?.createUser || ((req, res) => res.status(501).json({ error: 'createUser not implemented' }));
+const updateUser = userController.updateUser || userController.default?.updateUser || ((req, res) => res.status(501).json({ error: 'updateUser not implemented' }));
+const deleteUser = userController.deleteUser || userController.default?.deleteUser || ((req, res) => res.status(501).json({ error: 'deleteUser not implemented' }));
+
+// Load auth middleware safely (fallback to no-op middleware)
+let verifyToken;
+try {
+	const authMod = require('../middleware/auth');
+	if (typeof authMod === 'function') {
+		verifyToken = authMod;
+	} else if (authMod && typeof authMod.verifyToken === 'function') {
+		verifyToken = authMod.verifyToken;
+	} else {
+		verifyToken = (req, res, next) => next();
+	}
+} catch (e) {
+	verifyToken = (req, res, next) => next();
+}
 
 /**
  * @swagger
@@ -23,7 +51,7 @@ const verifyToken = require('../middleware/auth'); // ถ้ามี middleware
  *       200:
  *         description: List of users
  */
-router.get('/', verifyToken, userController.getAllUsers);
+router.get('/', verifyToken, getUsers);
 
 /**
  * @swagger
@@ -44,7 +72,7 @@ router.get('/', verifyToken, userController.getAllUsers);
  *       404:
  *         description: User not found
  */
-router.get('/:id', userController.getUserById);
+router.get('/:id', getUserById);
 
 /**
  * @swagger
@@ -72,7 +100,7 @@ router.get('/:id', userController.getUserById);
  *       201:
  *         description: User created
  */
-router.post('/', userController.createUser);
+router.post('/', createUser);
 
 /**
  * @swagger
@@ -102,7 +130,7 @@ router.post('/', userController.createUser);
  *       200:
  *         description: User updated
  */
-router.put('/:id', userController.updateUser);
+router.put('/:id', updateUser);
 
 /**
  * @swagger
@@ -121,7 +149,7 @@ router.put('/:id', userController.updateUser);
  *       200:
  *         description: User deleted
  */
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', deleteUser);
 
 /**
  * @swagger

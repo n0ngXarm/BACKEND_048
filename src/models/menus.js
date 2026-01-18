@@ -8,33 +8,39 @@ class Menu {
     }
 
     static async findById(id) {
-        const sql = 'SELECT * FROM tbl_menus WHERE menu_id = ?'; // ระวัง! Database พี่ใช้ menu_id ไม่ใช่ id เฉยๆ
+        const sql = 'SELECT * FROM tbl_menus WHERE menu_id = ?';
         const [rows] = await db.query(sql, [id]);
         return rows[0];
     }
 
     static async create(menuData) {
-        const { menu_name, description, price, category, restaurant_id } = menuData;
+        // ✅ เพิ่มการรับค่า image_url
+        const { menu_name, description, price, category, restaurant_id, image_url } = menuData;
         
-        // ถ้าไม่ส่ง restaurant_id มา ให้ Default เป็น 1 ไปก่อน
         const resId = restaurant_id || 1;
 
+        // ✅ เพิ่ม image_url เข้าไปใน INSERT
         const sql = `
-            INSERT INTO tbl_menus (restaurant_id, menu_name, description, price, category) 
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO tbl_menus (restaurant_id, menu_name, description, price, category, image_url) 
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
-        const [result] = await db.query(sql, [resId, menu_name, description, price, category]);
+        // ✅ เพิ่ม image_url เข้าไปใน array พารามิเตอร์ (ตัวสุดท้าย)
+        const [result] = await db.query(sql, [resId, menu_name, description, price, category, image_url]);
         return result.insertId;
     }
 
     static async update(id, data) {
-        const { menu_name, description, price, category } = data;
+        // ✅ เพิ่มการรับค่า image_url
+        const { menu_name, description, price, category, image_url } = data;
+        
+        // ✅ เพิ่ม image_url เข้าไปใน UPDATE
         const sql = `
             UPDATE tbl_menus 
-            SET menu_name = ?, description = ?, price = ?, category = ? 
+            SET menu_name = ?, description = ?, price = ?, category = ?, image_url = ?
             WHERE menu_id = ?
         `;
-        const [result] = await db.query(sql, [menu_name, description, price, category, id]);
+        // ✅ เพิ่ม image_url เข้าไปใน array พารามิเตอร์
+        const [result] = await db.query(sql, [menu_name, description, price, category, image_url, id]);
         return result.affectedRows;
     }
 
