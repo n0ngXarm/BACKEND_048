@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser'); // ✅ ต้องมีอันนี้
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpecs = require('./config/swagger');
+const path = require('path');
 
 const app = express();
 
@@ -10,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Import Routes (นำเข้าเส้นทาง)
 const authRoutes = require('./routes/authRoutes');

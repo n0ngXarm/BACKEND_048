@@ -59,3 +59,37 @@ exports.update = async (req, res) => {
         res.status(500).json({ error: err.message }); 
     }
 };
+exports.create = async (req, res) => {
+    try {
+        // 🔍 ดูว่า Frontend ส่ง image_url มาไหม และยาวแค่ไหน
+        if (req.body.image_url) {
+            console.log("✅ Received Image! Length:", req.body.image_url.length);
+            console.log("Start of Image:", req.body.image_url.substring(0, 50)); 
+        } else {
+            console.log("❌ No image_url received!");
+        }
+
+        const id = await Restaurant.create(req.body);
+        res.status(201).json({ message: 'Created', id });
+    } catch (err) {
+        console.error("🔥 Error:", err.message); // ดู Error ในจอดำ
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.update = async (req, res) => {
+    try {
+        // 🔍 เพิ่มเหมือนกันตอน Update
+        console.log("🔄 Updating Shop ID:", req.params.id);
+        if (req.body.image_url) {
+            console.log("✅ Received Image! Length:", req.body.image_url.length);
+        }
+
+        const affected = await Restaurant.update(req.params.id, req.body);
+        if (affected === 0) return res.status(404).json({ message: 'Not found' });
+        res.json({ message: 'Updated' });
+    } catch (err) {
+        console.error("🔥 Error:", err.message);
+        res.status(500).json({ error: err.message });
+    }
+};
