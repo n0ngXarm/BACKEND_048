@@ -38,6 +38,8 @@ router.get('/', customerController.getAllCustomers);
  *             properties:
  *               username:
  *                 type: string
+ *               password:
+ *                 type: string
  *               firstname:
  *                 type: string
  *               lastname:
@@ -96,6 +98,8 @@ router.get('/:id', customerController.getCustomerById);
  *                 type: string
  *               email:
  *                 type: string
+ *               password:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Updated successfully
@@ -122,4 +126,3 @@ router.put('/:id', customerController.updateCustomer);
 router.delete('/:id', customerController.deleteCustomer);
 
 module.exports = router;
-

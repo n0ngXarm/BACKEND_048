@@ -3,7 +3,7 @@ const db = require('../config/db');
 class Customer {
     static async findAll() {
         try {
-            const sql = 'SELECT id, fullname, lastname, phone_number, gmail, address, username FROM tbl_customers';
+            const sql = 'SELECT id, fullname, lastname, phone_number, gmail, address, username, password, status, created_at, updated_at FROM tbl_customers';
             const [rows] = await db.query(sql);
             return rows;
         } catch (error) {
@@ -13,7 +13,7 @@ class Customer {
 
     static async findById(id) {
         try {
-            const sql = 'SELECT id, fullname, lastname, phone_number, gmail, address, username FROM tbl_customers WHERE id = ?';
+            const sql = 'SELECT id, fullname, lastname, phone_number, gmail, address, username, password, status, created_at, updated_at FROM tbl_customers WHERE id = ?';
             const [rows] = await db.query(sql, [id]);
             return rows[0];
         } catch (error) {
@@ -37,12 +37,23 @@ class Customer {
 
     static async update(id, data) {
         try {
-            const { firstname, fullname, lastname, phone, phone_number, email, gmail, address } = data;
+            const { firstname, fullname, lastname, phone, phone_number, email, gmail, address, password } = data;
             const dbFullname = fullname || firstname;
             const dbPhone = phone_number || phone;
             const dbEmail = gmail || email;
-            const sql = 'UPDATE tbl_customers SET fullname = ?, lastname = ?, phone_number = ?, gmail = ?, address = ? WHERE id = ?';
-            const [result] = await db.query(sql, [dbFullname, lastname, dbPhone, dbEmail, address, id]);
+            
+            let sql = 'UPDATE tbl_customers SET fullname = ?, lastname = ?, phone_number = ?, gmail = ?, address = ?';
+            const params = [dbFullname, lastname, dbPhone, dbEmail, address];
+
+            if (password) {
+                sql += ', password = ?';
+                params.push(password);
+            }
+
+            sql += ' WHERE id = ?';
+            params.push(id);
+
+            const [result] = await db.query(sql, params);
             return result.affectedRows;
         } catch (error) {
             throw error;

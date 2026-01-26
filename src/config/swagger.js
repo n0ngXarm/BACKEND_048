@@ -94,10 +94,13 @@ const options = {
             fullname: { type: "string", example: "Somsri" },
             lastname: { type: "string", example: "Meewang" },
             username: { type: "string", example: "user123" },
+            password: { type: "string", example: "password123" },
             phone_number: { type: "string", example: "0812345678" },
             gmail: { type: "string", example: "somsri@test.com" },
             address: { type: "string", example: "123 Bangkok" },
             status: { type: "string", example: "active" },
+            created_at: { type: "string", format: "date-time" },
+            updated_at: { type: "string", format: "date-time" },
           },
         },
         Menu: {
