@@ -38,6 +38,30 @@ npm start
 - **Get Menus:** [https://backend048.vercel.app/menus](https://backend048.vercel.app/menus) *(คลิกเพื่อดูรายการเมนู)*
 
 ---
+## 🔐 Authentication API
+
+### 1. Login (เข้าสู่ระบบ)
+- **Endpoint:** `POST /login`
+- **Response:**
+  ```json
+  {
+    "user": { "id": 1, "username": "user" },
+    "accessToken": "...",
+    "refreshToken": "..."
+  }
+  ```
+
+### 2. Refresh Token (ต่ออายุ Token)
+- **Endpoint:** `POST /auth/refresh`
+- **Body:** `{ "refreshToken": "..." }`
+- **Response:**
+  ```json
+  {
+    "accessToken": "...",
+    "refreshToken": "..."
+  }
+  ```
+
 ### 📝 Example Response (ตัวอย่างผลลัพธ์)
 เมื่อเรียกข้อมูลจาก `/menus` ระบบจะส่งค่ากลับมาเป็น JSON ดังนี้:
 

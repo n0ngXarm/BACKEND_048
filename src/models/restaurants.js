@@ -3,7 +3,7 @@ const db = require('../config/db');
 class Restaurant {
     static async findAll() {
         try {
-            const sql = 'SELECT restaurant_id, restaurant_name, address, phone, menu_description, image_url FROM tbl_restaurants';
+            const sql = 'SELECT restaurant_id, owner_id, restaurant_name, address, phone, menu_description, image_url FROM tbl_restaurants';
             const [rows] = await db.query(sql);
             return rows;
         } catch (error) {
@@ -21,11 +21,21 @@ class Restaurant {
         }
     }
 
+    static async countByOwnerId(ownerId) {
+        try {
+            const sql = 'SELECT COUNT(*) as count FROM tbl_restaurants WHERE owner_id = ?';
+            const [rows] = await db.query(sql, [ownerId]);
+            return rows[0].count;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     static async create(data) {
         try {
-            const { restaurant_name, address, phone, menu_description, image_url } = data;
-            const sql = 'INSERT INTO tbl_restaurants (restaurant_name, address, phone, menu_description, image_url) VALUES (?, ?, ?, ?, ?)';
-            const [result] = await db.query(sql, [restaurant_name, address, phone, menu_description, image_url]);
+            const { restaurant_name, address, phone, menu_description, image_url, owner_id } = data;
+            const sql = 'INSERT INTO tbl_restaurants (restaurant_name, address, phone, menu_description, image_url, owner_id) VALUES (?, ?, ?, ?, ?, ?)';
+            const [result] = await db.query(sql, [restaurant_name, address, phone, menu_description, image_url, owner_id]);
             return result.insertId;
         } catch (error) {
             throw error;

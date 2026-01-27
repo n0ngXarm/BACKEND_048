@@ -11,6 +11,16 @@ class Menu {
         }
     }
 
+    static async countByRestaurantId(restaurantId) {
+        try {
+            const sql = 'SELECT COUNT(*) as count FROM tbl_menus WHERE restaurant_id = ?';
+            const [rows] = await db.query(sql, [restaurantId]);
+            return rows[0].count;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     static async findById(id) {
         try {
             const sql = 'SELECT * FROM tbl_menus WHERE menu_id = ?';

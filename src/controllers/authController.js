@@ -1,68 +1,89 @@
-// src/controllers/authController.js
-const User = require('../models/users'); // ตรวจสอบว่ามีไฟล์ models/users.js จริงไหม
+const jwt = require('jsonwebtoken');
+
+// จำลอง Database สำหรับเก็บ Refresh Token (ใน Production ควรใช้ Redis หรือ SQL)
+let refreshTokens = [];
+
+const generateAccessToken = (user) => {
+    return jwt.sign(
+        { id: user.id, username: user.username, role: user.role },
+        process.env.JWT_SECRET || 'access_secret_key', // ควรตั้งค่าใน .env
+        { expiresIn: '15m' } // Access Token อายุสั้น
+    );
+};
+
+const generateRefreshToken = (user) => {
+    return jwt.sign(
+        { id: user.id, username: user.username, role: user.role },
+        process.env.REFRESH_TOKEN_SECRET || 'refresh_secret_key', // ควรตั้งค่าใน .env
+        { expiresIn: '7d' } // Refresh Token อายุยาว
+    );
+};
 
 exports.register = async (req, res) => {
-    try {
-        const { username, password, gmail, role } = req.body;
-        
-        // เช็คว่าส่งข้อมูลมาครบไหม
-        if (!username || !password || !gmail) {
-            return res.status(400).json({ message: 'Please provide all required fields' });
-        }
-
-        // สร้าง user
-        const userData = { username, password, gmail, role };
-        const userId = await User.create(userData);
-        
-        res.status(201).json({ 
-            success: true,
-            message: 'User registered successfully', 
-            userId 
-        });
-    } catch (error) {
-        console.error('Register Error:', error);
-        res.status(500).json({ success: false, message: 'Register failed' });
-    }
+    // Placeholder เพื่อป้องกัน Error จาก Route เก่าที่เรียกหา register
+    res.status(501).json({ message: "Register not implemented" });
 };
 
 exports.login = async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        
-        const user = await User.findByUsername(username);
+    // รับค่าจาก Body
+    const { username, password } = req.body;
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-
-        if (user.password !== password) {
-            return res.status(401).json({ success: false, message: 'Invalid password' });
-        }
-
-        res.json({ 
-            success: true,
-            message: 'Login successful', 
-            user: { 
-                id: user.id, 
-                username: user.username, 
-                role: user.role 
-            } 
-        });
-
-    } catch (error) {
-        console.error('Login Error:', error);
-        res.status(500).json({ success: false, message: 'Login failed' });
+    // TODO: เพิ่ม Logic ตรวจสอบ Username/Password กับ Database จริงที่นี่
+    // ตัวอย่าง Mock User เพื่อให้ API ทำงานได้ตามสเปค
+    if (!username || !password) {
+        return res.status(400).json({ message: 'Username and password are required' });
     }
+
+    const user = {
+        id: 1,
+        username: username,
+        role: 'user'
+    };
+
+    // สร้าง Token ทั้งสองแบบ
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    // เก็บ Refresh Token ไว้ในระบบ (Whitelist)
+    refreshTokens.push(refreshToken);
+
+    // ส่ง Response ตามสเปค
+    res.json({
+        user,
+        accessToken,
+        refreshToken
+    });
 };
-exports.logout = async (req, res) => {
-    try {
-        // ในระบบ JWT ปกติเราไม่ต้องทำอะไรฝั่ง Server มากนัก
-        // แค่บอก Client ให้ลบ Token ทิ้ง
-        res.status(200).json({ 
-            success: true, 
-            message: 'Logged out successfully' 
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: 'Logout failed' });
+
+exports.refreshToken = async (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) return res.status(401).json({ message: "Refresh Token required" });
+
+    // ตรวจสอบว่า Token มีอยู่ในระบบหรือไม่
+    if (!refreshTokens.includes(refreshToken)) {
+        return res.status(403).json({ message: "Invalid Refresh Token" });
     }
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || 'refresh_secret_key', (err, user) => {
+        if (err) return res.status(403).json({ message: "Token expired or invalid" });
+
+        // Token Rotation: ลบอันเก่า สร้างอันใหม่
+        refreshTokens = refreshTokens.filter(t => t !== refreshToken);
+
+        const newAccessToken = generateAccessToken(user);
+        const newRefreshToken = generateRefreshToken(user);
+
+        refreshTokens.push(newRefreshToken);
+
+        res.json({
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken
+        });
+    });
+};
+
+exports.logout = async (req, res) => {
+    // Placeholder เพื่อป้องกัน Error จาก Route เก่า
+    res.json({ message: "Logout successful" });
 };

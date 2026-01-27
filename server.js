@@ -24,6 +24,20 @@ const updateProfile = userController.updateProfile || userController.default?.up
 app.get('/api/users/:id', getProfile);
 app.put('/api/users/update', updateProfile);
 
+// Auth Routes (Login & Refresh Token)
+const authController = require('./src/controllers/authController');
+app.post('/login', authController.login);
+app.post('/auth/refresh', authController.refreshToken);
+
+// Start Cron Job (Scheduler)
+// ตรวจสอบให้แน่ใจว่าติดตั้งแล้ว: npm install node-cron
+const scheduler = require('./scheduler');
+
+// If scheduler exports a function to initialize jobs, call it here:
+if (typeof scheduler === 'function') {
+    scheduler();
+}
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

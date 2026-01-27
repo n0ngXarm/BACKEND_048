@@ -3,7 +3,7 @@ const db = require('../config/db');
 class Customer {
     static async findAll() {
         try {
-            const sql = 'SELECT id, fullname, lastname, phone_number, gmail, address, username, password, status, created_at, updated_at FROM tbl_customers';
+            const sql = 'SELECT id, fullname, lastname, phone_number, gmail, address, username, password, status, is_plus_member, subscription_end_date, created_at, updated_at FROM tbl_customers';
             const [rows] = await db.query(sql);
             return rows;
         } catch (error) {
@@ -13,7 +13,7 @@ class Customer {
 
     static async findById(id) {
         try {
-            const sql = 'SELECT id, fullname, lastname, phone_number, gmail, address, username, password, status, created_at, updated_at FROM tbl_customers WHERE id = ?';
+            const sql = 'SELECT id, fullname, lastname, phone_number, gmail, address, username, password, status, is_plus_member, subscription_end_date, created_at, updated_at FROM tbl_customers WHERE id = ?';
             const [rows] = await db.query(sql, [id]);
             return rows[0];
         } catch (error) {
@@ -37,13 +37,18 @@ class Customer {
 
     static async update(id, data) {
         try {
-            const { firstname, fullname, lastname, phone, phone_number, email, gmail, address, password } = data;
+            const { firstname, fullname, lastname, phone, phone_number, email, gmail, address, password, is_plus_member, subscription_end_date } = data;
             const dbFullname = fullname || firstname;
             const dbPhone = phone_number || phone;
             const dbEmail = gmail || email;
             
             let sql = 'UPDATE tbl_customers SET fullname = ?, lastname = ?, phone_number = ?, gmail = ?, address = ?';
             const params = [dbFullname, lastname, dbPhone, dbEmail, address];
+
+            if (is_plus_member !== undefined) {
+                sql += ', is_plus_member = ?, subscription_end_date = ?';
+                params.push(is_plus_member, subscription_end_date);
+            }
 
             if (password) {
                 sql += ', password = ?';
