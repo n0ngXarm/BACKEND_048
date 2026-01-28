@@ -1,14 +1,7 @@
-const cors = require('cors');
 const app = require('./src/app');
 const dotenv = require('dotenv');
 
 dotenv.config();
-
-// Configure CORS before registering routes
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
-}));
 
 // Load userController from src with safe fallbacks
 let userController;
