@@ -21,6 +21,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Import Routes (นำเข้าเส้นทาง)
+const authController = require('./controllers/authController');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const menuRoutes = require('./routes/menuRoutes');
@@ -28,6 +29,10 @@ const orderRoutes = require('./routes/orderRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+
+// Routes from server.js (Moved here for Vercel compatibility)
+app.post('/login', authController.login);
+app.post('/auth/refresh', authController.refreshToken);
 
 // Use Routes (เปิดใช้งาน)
 app.use('/api/auth', authRoutes);
